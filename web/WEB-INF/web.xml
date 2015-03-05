@@ -4,17 +4,9 @@
         <servlet-name>SchemaServlet</servlet-name>
         <servlet-class>ece356.SchemaServlet</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>QueryServlet</servlet-name>
-        <servlet-class>ece356.QueryServlet</servlet-class>
-    </servlet>
     <servlet-mapping>
-        <servlet-name>SchemaServlet</servlet-name>
-        <url-pattern>/SchemaServlet</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>QueryServlet</servlet-name>
-        <url-pattern>/QueryServlet</url-pattern>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>
