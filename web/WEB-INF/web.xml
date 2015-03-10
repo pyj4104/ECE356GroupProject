@@ -4,10 +4,10 @@
         <servlet-name>SchemaServlet</servlet-name>
         <servlet-class>ece356.SchemaServlet</servlet-class>
     </servlet>
-    <servlet-mapping>
+    <servlet>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
-    </servlet-mapping>
+        <servlet-class>ece356.LoginServlet</servlet-class>
+    </servlet>
     <session-config>
         <session-timeout>
             30
