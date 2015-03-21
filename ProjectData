@@ -1,0 +1,23 @@
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('John', 'Aikenhead', 'Male', 'aiken@head.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Jane', 'Amniotic', 'Female', 'obgyn_clinic@rogers.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Mary', 'Umbilical', 'Female', 'obgyn_clinic@rogers.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Jack', 'Hearty', 'Male', 'jack@healthyheart.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Beth', 'Cutter', 'Female', 'beth@tummytuck.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Bob', 'Bobberson', 'Male', 'beth@tummytuck.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Peggy', 'Bobberson', 'Female', 'beth@tummytuck.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Homer', 'Homerson', 'Male', 'beth@tummytuck.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Kate', 'Katemyer', 'Female', 'beth@tummytuck.com');
+
+INSERT INTO User_Detail(First_Name, Last_Name, Gender, Email) VALUES('Anne', 'MacDonald', 'Female', 'beth@tummytuck.com');
+
+SET @salt = '[B@16cc8a48';
+INSERT INTO Login VALUES('jwsmith', SHA2(CONCAT(@salt, 'password'), 256), @salt, 'jsmail@email.com');
+

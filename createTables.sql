@@ -18,14 +18,14 @@ CREATE TABLE User_Detail
 	Middle_Initial VARCHAR(1),
 	Last_Name VARCHAR(12),
 	Gender VARCHAR(6),
-	Email VARCHAR(100) UNIQUE,
+	Email VARCHAR(100),
 	PRIMARY KEY (UserID)
 );
 
 CREATE TABLE Login
 (
 	UserID INT,
-	Alias VARCHAR(8),
+	Alias VARCHAR(25),
 	Hashed_Password VARCHAR(256),
 	Salt VARCHAR(256),
 	Email VARCHAR(100),
