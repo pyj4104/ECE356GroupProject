@@ -53,11 +53,11 @@ INSERT INTO Region VALUES(2, 'Ontario', 'Guelph');
 INSERT INTO Region VALUES(3, 'Ontario', 'Waterloo');
 INSERT INTO Region VALUES(4, 'Ontario', 'Cambridge');
 
-INSERT INTO Patient VALUES('pat_bob', 6);
-INSERT INTO Patient VALUES('pat_peggy', 7);
-INSERT INTO Patient VALUES('pat_homer', 8);
-INSERT INTO Patient VALUES('pat_kate', 9);
-INSERT INTO Patient VALUES('pat_anne', 10);
+INSERT INTO Patient VALUES('pat_bob', 3);
+INSERT INTO Patient VALUES('pat_peggy', 3);
+INSERT INTO Patient VALUES('pat_homer', 1);
+INSERT INTO Patient VALUES('pat_kate', 4);
+INSERT INTO Patient VALUES('pat_anne', 2);
 
 INSERT INTO Work_Address VALUES(3, 'N2P2W8', '1 Elizabeth Street');
 INSERT INTO Work_Address VALUES(1, 'N2P1K2', '2 Aikenhead Street');

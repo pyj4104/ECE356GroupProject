@@ -43,7 +43,7 @@ CREATE TABLE Region
 
 CREATE TABLE Patient
 (
-	Alias VARCHAR(8),
+	Alias VARCHAR(25),
 	Region_ID INT,
 	PRIMARY KEY (Alias),
 	FOREIGN KEY (Alias) references Login (Alias) ON DELETE CASCADE,
@@ -52,8 +52,8 @@ CREATE TABLE Patient
 
 CREATE TABLE Friendship
 (
-	From_Alias VARCHAR(8),
-	To_Alias VARCHAR(8),
+	From_Alias VARCHAR(25),
+	To_Alias VARCHAR(25),
 	Status INT,
 	PRIMARY KEY (From_Alias, To_Alias),
 	FOREIGN KEY (From_Alias) references Patient (Alias) ON DELETE CASCADE,
@@ -71,7 +71,7 @@ CREATE TABLE Work_Address
 
 CREATE TABLE Doctor
 (
-	Alias VARCHAR(8),
+	Alias VARCHAR(25),
 	License_Year INT,
 	PRIMARY KEY (Alias),
 	FOREIGN KEY (Alias) references Login (Alias) ON DELETE CASCADE
@@ -79,7 +79,7 @@ CREATE TABLE Doctor
 
 CREATE TABLE Works
 (
-	Alias VARCHAR(8),
+	Alias VARCHAR(25),
 	Postal_Code VARCHAR(15),
 	Street VARCHAR(30),
 	PRIMARY KEY (Alias, Street, Postal_Code),
@@ -97,7 +97,7 @@ CREATE TABLE Specialization
 CREATE TABLE Specializes
 (
 	Spec_ID INT,
-	Alias VARCHAR(8),
+	Alias VARCHAR(25),
 	PRIMARY KEY (Spec_ID, Alias),
 	FOREIGN KEY (Spec_ID) references Specialization (Spec_ID) ON DELETE CASCADE,
 	FOREIGN KEY (Alias) references Doctor (Alias) ON DELETE CASCADE	
@@ -108,8 +108,8 @@ CREATE TABLE Reviews
 	Rating FLOAT,
 	Review_Date TIMESTAMP,
 	Comments VARCHAR(1000),
-	Doctor_Alias VARCHAR(8),
-	Patient_Alias VARCHAR(8),
+	Doctor_Alias VARCHAR(25),
+	Patient_Alias VARCHAR(25),
 	PRIMARY KEY (Review_Date, Doctor_Alias, Patient_Alias),
 	FOREIGN KEY (Doctor_Alias) references Doctor (Alias) ON DELETE CASCADE,
 	FOREIGN KEY (Patient_Alias) references Patient (Alias) ON DELETE CASCADE	
