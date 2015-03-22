@@ -7,7 +7,9 @@ package ece356;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,11 +30,24 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException
+    {
+        HttpSession session = request.getSession();
+        String url;
         String strInputAlias = request.getParameter("userInputAlias");
         String strInputPassword = request.getParameter("userInputPassword");
         
-        
+        if (true)
+        {
+            session.setAttribute("doctor", true);
+            url = "./view/doc.jsp";
+        }
+        else
+        {
+            session.setAttribute("doctor", false);
+            url = "./view/patient.jsp";
+        }
+        request.getRequestDispatcher(url).forward(request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
