@@ -37,26 +37,33 @@ public class LoginServlet extends HttpServlet {
     {
         HttpSession session = request.getSession();
         String url;
-        String strInputAlias = request.getParameter("userInputAlias");
-        String strInputPassword = request.getParameter("userInputPassword");
-
         int nVerificationRet = -1;
-        try {
-            nVerificationRet = ProjectDBAO.AuthenticateLogin(strInputAlias, strInputPassword);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SQLException ex) {
-            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String strInputAlias = "";
         
-        if (false)
-        {
-            session.setAttribute("doctor", true);
-            url = "./view/doc.jsp";
+        // 'Go back' feature
+        if (session.getAttribute("alias") != null && session.getAttribute("doctor") != null) {
+            strInputAlias = session.getAttribute("alias").toString();
+            if ((boolean)session.getAttribute("doctor"))
+                nVerificationRet = 1;
+            else
+                nVerificationRet = 0;
+        } else {
+            strInputAlias = request.getParameter("userInputAlias");
+            String strInputPassword = request.getParameter("userInputPassword");
+
+            nVerificationRet = -1;
+            try {
+                nVerificationRet = ProjectDBAO.AuthenticateLogin(strInputAlias, strInputPassword);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (SQLException ex) {
+                Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
         if (nVerificationRet != -1) {
             request.setAttribute("Error", null);
+            session.setAttribute("alias", strInputAlias);
             if (nVerificationRet == 1)
             {
                 session.setAttribute("doctor", true);

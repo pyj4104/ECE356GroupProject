@@ -117,4 +117,65 @@ public class ProjectDBAO {
         
         return doc;
     }
+    
+    public static ArrayList<Patient> getPendingFriendRequests(String strAlias) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ArrayList<Patient> arrPatients = null;
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("SELECT F.From_Alias, UD.Email, UD.First_Name, UD.Middle_Initial, UD.Last_Name, R.Province, R.City"
+                                        + " FROM Friendship F"
+                                        + " INNER JOIN Login L ON L.Alias = F.From_Alias"
+                                        + " INNER JOIN User_Detail UD ON UD.UserID = L.UserID"
+                                        + " INNER JOIN Patient P ON P.Alias = F.From_Alias"
+                                        + " INNER JOIN Region R ON R.Region_ID = P.Region_ID"
+                                        + " WHERE To_Alias = ? AND Status = 0");
+
+            stmt.setString(1, strAlias);
+            ResultSet resultSet = stmt.executeQuery();
+            arrPatients = new ArrayList<Patient>();
+            while(resultSet.next()) {
+                Patient p = new Patient(resultSet.getString("First_Name"),
+                                        resultSet.getString("Last_Name"),
+                                        (resultSet.getString("Middle_Initial") == null) ? "" : resultSet.getString("Middle_Initial"),
+                                        resultSet.getString("From_Alias"),
+                                        resultSet.getString("Province"),
+                                        resultSet.getString("City"),
+                                        resultSet.getString("Email"));
+                arrPatients.add(p);
+            }
+            
+            return arrPatients;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
+    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("Update Friendship SET Status = 1 WHERE From_Alias = ? AND To_Alias = ?");
+
+            stmt.setString(1, strFromAlias);
+            stmt.setString(2, strToAlias);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
 }

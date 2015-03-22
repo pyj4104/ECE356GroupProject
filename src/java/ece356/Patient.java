@@ -10,20 +10,20 @@ package ece356;
  * @author Nirmal
  */
 public class Patient {
-    private String strFirstName;
-    private String strLastName;
-    private String strMiddleName;
-    private String strAlias;
-    private String strProvince;
-    private String strCity;
-    private String strEmail;
+    final private String strFirstName;
+    final private String strLastName;
+    final private String strMiddleInitial;
+    final private String strAlias;
+    final private String strProvince;
+    final private String strCity;
+    final private String strEmail;
     
-    public Patient(String strFirstName, String strLastName, String strMiddleName, 
+    public Patient(String strFirstName, String strLastName, String strMiddleInitial, 
                     String strAlias, String strProvince, String strCity,
                     String strEmail) {
         this.strFirstName = strFirstName;
         this.strLastName = strLastName;
-        this.strMiddleName = strMiddleName;
+        this.strMiddleInitial = strMiddleInitial;
         this.strAlias = strAlias;
         this.strProvince = strProvince;
         this.strCity = strCity;
@@ -38,16 +38,20 @@ public class Patient {
         return strLastName;
     }
     
-    public String getMiddleName() {
-        return strMiddleName;
+    public String getMiddleInitial() {
+        return strMiddleInitial;
     }
     
     public String getFullName() {
         StringBuffer bufName = new StringBuffer();
         bufName.append(strFirstName);
         bufName.append(" ");
-        bufName.append(strMiddleName);
-        bufName.append(" ");
+        
+        if (!strMiddleInitial.isEmpty()) {
+            bufName.append(strMiddleInitial);
+            bufName.append(" ");
+        }
+        
         bufName.append(strLastName);
         
         return bufName.toString();
