@@ -39,6 +39,7 @@ public class LoginServlet extends HttpServlet {
         String url;
         String strInputAlias = request.getParameter("userInputAlias");
         String strInputPassword = request.getParameter("userInputPassword");
+
         int nVerificationRet = -1;
         try {
             nVerificationRet = ProjectDBAO.AuthenticateLogin(strInputAlias, strInputPassword);
@@ -46,6 +47,12 @@ public class LoginServlet extends HttpServlet {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        if (false)
+        {
+            session.setAttribute("doctor", true);
+            url = "./view/doc.jsp";
         }
         
         if (nVerificationRet != -1) {
