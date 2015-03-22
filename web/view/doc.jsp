@@ -9,9 +9,11 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <title>Welcome Doctor to DocBook!</title>
     </head>
     <body>
         <h1>Hello Doc!</h1>
+        <h2>Doctor Operation</h2>
+        <h3>-View Doctor Profile</h3>
     </body>
 </html>
