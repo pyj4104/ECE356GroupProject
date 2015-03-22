@@ -7,7 +7,10 @@ package ece356;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServlet;
@@ -36,16 +39,32 @@ public class LoginServlet extends HttpServlet {
         String url;
         String strInputAlias = request.getParameter("userInputAlias");
         String strInputPassword = request.getParameter("userInputPassword");
-        
-        if (true)
-        {
-            session.setAttribute("doctor", true);
-            url = "./view/doc.jsp";
+        int nVerificationRet = -1;
+        try {
+            nVerificationRet = ProjectDBAO.AuthenticateLogin(strInputAlias, strInputPassword);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if (nVerificationRet != -1) {
+            request.setAttribute("Error", null);
+            if (nVerificationRet == 1)
+            {
+                session.setAttribute("doctor", true);
+                url = "./view/doc.jsp";
+            }
+            else
+            {
+                session.setAttribute("doctor", false);
+                url = "./view/patient.jsp";
+            }
+        } 
         else
         {
-            session.setAttribute("doctor", false);
-            url = "./view/patient.jsp";
+            request.setAttribute("Error", "Invalid login credentials!");
+            url = "/index.jsp";
         }
         request.getRequestDispatcher(url).forward(request, response);
     }

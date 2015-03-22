@@ -21,5 +21,6 @@
             </table>
             <h3><input type="submit" value="Log In"></h3>
         </form>
+        <span><% if(request.getAttribute("Error") != null) {out.println(request.getAttribute("Error"));} %></span>
     </body>
 </html>
