@@ -13,6 +13,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ProjectDBAO {
 
@@ -82,5 +84,25 @@ public class ProjectDBAO {
                 con.close();
             }
         }
+    }
+    
+    public static Doctor getDocProfile(String Alias) throws ClassNotFoundException
+    {
+        Doctor doc;
+        Connection conn;
+        
+        doc = new Doctor(0, 10, 10, "hi", "p", "n", "st", "p", "d", 10);
+
+        try
+        {
+            conn = ProjectDBAO.getConnection();
+            
+        }
+        catch (SQLException se)
+        {
+
+        }
+        
+        return doc;
     }
 }

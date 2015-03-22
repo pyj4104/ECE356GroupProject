@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
         String strInputAlias = request.getParameter("userInputAlias");
         String strInputPassword = request.getParameter("userInputPassword");
         
-        if (true)
+        if (false)
         {
             session.setAttribute("doctor", true);
             url = "./view/doc.jsp";
