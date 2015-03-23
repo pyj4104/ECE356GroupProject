@@ -398,6 +398,26 @@ public class ProjectDBAO {
         }
     }
     
+    public static void WriteReview(String strFromAlias) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("INSERT INTO Friendship VALUES(?, ?, 0)");
+
+            stmt.setString(1, strFromAlias);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
     public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -629,7 +649,7 @@ public class ProjectDBAO {
         try {
             con = getConnection();
 
-            stmt = con.prepareStatement("SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
+            /*stmt = con.prepareStatement("SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
                                         + " AVG(RE.Rating) AS 'Average_Rating', COUNT(*) AS 'Total_Reviews', F.To_Alias"
                                         + " FROM Login L"
                                         + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
@@ -641,7 +661,43 @@ public class ProjectDBAO {
                                         + " INNER JOIN Works ws ON ws.`Alias` = D.`Alias`"
                                         + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
                                         + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
-                                        + sqlQuery);
+                                        + sqlQuery);*/
+            stmt = con.prepareStatement(
+            "SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
+          + "     REV.Average_Rating, REV.Total_Reviews"
+          + "     FROM Login L"
+          + "     INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
+          + "     INNER JOIN Doctor D ON L.Alias = D.Alias"
+          + "     LEFT JOIN"
+          + "     ("
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', AVG(RE.Rating) AS 'Average_Rating',"
+          + "                         COUNT(*) AS 'Total_Reviews'"
+          + "           FROM Reviews RE"
+          + "     INNER JOIN Doctor D ON (RE.Doctor_Alias = D.Alias)"
+          + "     ) REV ON REV.Doctor_Alias = L.Alias"
+          + "     LEFT JOIN"
+          + "     ("
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
+          + "           FROM Specializes S" 
+          + "     INNER JOIN Doctor D ON (S.`Alias` = D.`Alias`)"
+          + "     INNER JOIN Specialization sn ON (sn.Spec_ID = S.Spec_ID)"
+          + "     ) SPE ON SPE.Doctor_Alias = L.Alias"
+          + "     LEFT JOIN"
+          + "     ("
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
+          + "          FROM Works ws" 
+          + "     INNER JOIN Doctor D ON ws.`Alias` = D.`Alias`"
+          + "     INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
+          + "     INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
+          + "     ) WSR ON WSR.Doctor_Alias = L.Alias"
+          + "     LEFT JOIN"
+          + "     ("
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
+          + "           FROM Friendship F" 
+          + "     INNER JOIN Doctor D ON (D.Alias = F.To_Alias)"
+          + "     INNER JOIN Reviews RE ON (RE.Patient_Alias = F.To_Alias)"
+          + "     ) FRE ON FRE.Doctor_Alias = L.Alias"
+          + sqlQuery);
             int paramCount = 1;
             if (isFirstNameUsed)
             {
