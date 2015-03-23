@@ -5,6 +5,8 @@
  */
 package ece356;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author yeounjunpark
@@ -13,24 +15,33 @@ public class Doctor
 {
     private int licensed_since, num_review;
     private double average_rating;
-    private String first_name, last_name, middle_initial, street, postal_code,
-            description, gender, comments;
+    private String alias, first_name, last_name, middle_initial, gender;
+    private ArrayList<String> specializations;
+    private ArrayList<WorkAddress> work_addresses;
+    private ArrayList<Review> reviews;
     
-    public Doctor(String gen, int license_since, int review_num,
-            String firstName, String lastName, String middleInit, String st,
-            String post, String descrip, double avg_rate, String comms)
-    {
+    public Doctor() {
+    }
+    
+    public Doctor(String alias, String gen, int license_since, int review_num,
+            String firstName, String lastName, String middleInit, ArrayList<WorkAddress> wAddrs,
+            ArrayList<String> specs, double avg_rate, ArrayList<Review> reviews) {
+        this.alias = alias;
         this.gender = gen;
         this.licensed_since = license_since;
         this.num_review = review_num;
         this.first_name = firstName;
         this.last_name = lastName;
         this.middle_initial = middleInit;
-        this.street = st;
-        this.description = descrip;
+        this.work_addresses = wAddrs;
+        this.specializations = specs;
         this.average_rating = avg_rate;
-        this.postal_code = post;
-        this.comments = comms;
+        this.reviews = reviews;
+    }
+    
+    public String get_Alias()
+    {
+        return this.alias;
     }
     
     public String get_Name()
@@ -44,14 +55,14 @@ public class Doctor
         return this.gender;
     }
     
-    public String get_Address()
+    public ArrayList<WorkAddress> get_Addresses()
     {
-        return this.street + " " + this.postal_code;
+        return this.work_addresses;
     }
     
-    public String get_Description()
+    public ArrayList<String> get_Specializations()
     {
-        return this.description;
+        return this.specializations;
     }
     
     public int get_Licensed_Since()
@@ -67,5 +78,9 @@ public class Doctor
     public int get_Num_Review()
     {
         return this.num_review;
+    }
+    
+    public ArrayList<Review> get_Reviews() {
+        return this.reviews;
     }
 }

@@ -14,6 +14,6 @@
     <body>
         <h1>Hello Doc!</h1>
         <h2>Doctor Operation</h2>
-        <h3><a href="/DocViewProfServlet">View Doctor Profile</a></h3>
+        <h3><a href="view/docprofile.jsp">View Doctor Profile</a></h3>
     </body>
 </html>

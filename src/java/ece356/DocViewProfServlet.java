@@ -37,7 +37,7 @@ public class DocViewProfServlet extends HttpServlet {
         
         Doctor prof;
         
-        prof = ProjectDBAO.getDocProfile((String) session.getAttribute("Alias"));
+        //prof = ProjectDBAO.getDocProfile((String) session.getAttribute("Alias"));
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

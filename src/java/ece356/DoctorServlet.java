@@ -8,6 +8,7 @@ package ece356;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.ParseException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -34,7 +35,8 @@ public class DoctorServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException {
+            throws ServletException, IOException, ClassNotFoundException, SQLException,
+            ParseException {
         String strQueryNum = request.getParameter("qnum");
         int i_queryNum = Integer.parseInt(strQueryNum);
         String url;
@@ -86,6 +88,32 @@ public class DoctorServlet extends HttpServlet {
                 try
                 {
                     docPostalCode = request.getParameter("docPostalCode");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            
+            String docProvince = "";
+            if (request.getParameter("docProvince") != null && !(request.getParameter("docProvince").isEmpty()))
+            {
+                try
+                {
+                    docProvince = request.getParameter("docProvince");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            
+            String docCity = "";
+            if (request.getParameter("docCity") != null && !(request.getParameter("docCity").isEmpty()))
+            {
+                try
+                {
+                    docCity = request.getParameter("docCity");
                 }
                 catch (Exception ex)
                 {
@@ -191,10 +219,31 @@ public class DoctorServlet extends HttpServlet {
             DoctorDBAO ddbao = new DoctorDBAO(docFirstName, docMiddleInitial, docLastName, 
                                               docPostalCode, docLicenseDuration, docAvgRating,
                                               docSpec, docGender, docStreet, docReviewKeywords,
+                                              docProvince, docCity,
                                               docReviewedByPatFriend);
             ArrayList<Doctor> ret = ProjectDBAO.SearchForDoctors(ddbao);
             url = "./view/doctorsearch.jsp";    
             request.setAttribute("doctorSearchResults", ret);
+            request.getRequestDispatcher(url).forward(request, response);
+        }
+        else if (i_queryNum == 2)
+        {
+            String strAliasParam = "";
+            if (request.getParameter("fromAlias") != null && !(request.getParameter("fromAlias").isEmpty()))
+            {
+                try
+                {
+                    strAliasParam = request.getParameter("fromAlias");
+                }
+                catch (Exception ex)
+                {
+                    throw ex;
+                }
+            }
+            
+            url = "./view/docprofile.jsp";
+            Doctor ret = ProjectDBAO.getDocProfile(strAliasParam);
+            request.setAttribute("docProfile", ret);
             request.getRequestDispatcher(url).forward(request, response);
         }
     }
@@ -217,6 +266,8 @@ public class DoctorServlet extends HttpServlet {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -236,6 +287,8 @@ public class DoctorServlet extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

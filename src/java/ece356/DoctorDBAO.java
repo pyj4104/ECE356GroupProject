@@ -14,13 +14,15 @@ public class DoctorDBAO
     private int docLicenseDuration;
     private double docAvgRating; 
     private String docFirstName, docMiddleInitial, docLastName, docPostalCode, 
-                   docGender, docSpec, docReviewKeywords, docStreet;
+                   docGender, docSpec, docReviewKeywords, docStreet, docProvince,
+                   docCity;
     private boolean docReviewedByPatientFriend;
     
     public DoctorDBAO(String first_name, String middle_init, String last_name, 
                   String postal_code, int licensed_since, double avgRating, 
                   String specialization, String gender, String street, 
-                  String keywords, boolean reviewedByFriend)  
+                  String keywords, String province, String city,
+                  boolean reviewedByFriend)  
     {
         this.docFirstName = first_name;
         this.docMiddleInitial = middle_init;
@@ -32,6 +34,8 @@ public class DoctorDBAO
         this.docGender = gender; 
         this.docStreet = street;
         this.docReviewKeywords = keywords;
+        this.docProvince = province;
+        this.docCity = city;
         this.docReviewedByPatientFriend = reviewedByFriend;
     }
     
@@ -88,5 +92,13 @@ public class DoctorDBAO
     public boolean get_IsReviewedByPatientFriend()
     {
         return this.docReviewedByPatientFriend;
+    }
+    
+    public String get_Province() {
+        return this.docProvince;
+    }
+    
+    public String get_City() {
+        return this.docCity;
     }
 }

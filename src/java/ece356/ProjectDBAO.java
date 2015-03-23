@@ -13,6 +13,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -98,24 +99,102 @@ public class ProjectDBAO {
         }
     }
     
-    public static Doctor getDocProfile(String Alias) throws ClassNotFoundException
+    public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException
     {
-        Doctor doc;
-        Connection conn;
-        
-        doc = new Doctor("Male", 10, 10, "hi", "p", "n", "st", "p", "d", 10, "c");
+        Doctor doc = null;
+        ArrayList<WorkAddress> work_addresses = new ArrayList<WorkAddress>();
+        ArrayList<String> specializations = new ArrayList<String>();
+        ArrayList<Review> reviews = new ArrayList<Review>();
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
         try
         {
             conn = ProjectDBAO.getConnection();
+            stmt = conn.prepareStatement(" SELECT UD.Gender, UD.First_Name, UD.Last_Name, UD.Middle_Initial,"
+                                      + " (YEAR(CURDATE()) - doc.License_Year) AS 'nYears_for_License',"
+                                      + " (Select AVG(Re.Rating) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Average_Rating',"
+                                      + " (Select COUNT(*) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Number_of_reviews'"
+                                      + " FROM Doctor doc"
+                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
+                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
+                                      + " WHERE doc.`Alias`= ?");
+            stmt.setString(1, strAlias);
+            stmt.setString(2, strAlias);
+            stmt.setString(3, strAlias);
+            ResultSet resultSet = stmt.executeQuery();
             
-        }
-        catch (SQLException se)
-        {
-
+            stmt = conn.prepareStatement(" SELECT specn.Description"
+                                      + " FROM Doctor doc"
+                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
+                                      + " INNER JOIN Specializes spec ON doc.`Alias` = spec.`Alias`"
+                                      + " INNER JOIN Specialization specn ON spec.Spec_ID = specn.Spec_ID"
+                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
+                                      + " WHERE doc.`Alias`= ?");
+            stmt.setString(1, strAlias);
+            ResultSet specResultSet = stmt.executeQuery();
+            while(specResultSet.next()) {
+                specializations.add(specResultSet.getString("Description"));
+            }
+            
+            stmt = conn.prepareStatement(" SELECT wa.Postal_Code, wa.Street, r.City, r.Province"
+                                      + " FROM Doctor doc"
+                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
+                                      + " INNER JOIN Works ws ON ws.`Alias` = doc.`Alias`"
+                                      + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
+                                      + " INNER JOIN Region r ON r.Region_ID = wa.Region_ID"
+                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
+                                      + " WHERE doc.`Alias`= ?");
+            stmt.setString(1, strAlias);
+            ResultSet addrResultSet = stmt.executeQuery();
+            
+            while(addrResultSet.next()) {
+                WorkAddress wAddr = new WorkAddress(addrResultSet.getString("Province"),
+                                                    addrResultSet.getString("City"),
+                                                    addrResultSet.getString("Street"),
+                                                    addrResultSet.getString("Postal_Code"));
+                work_addresses.add(wAddr);
+            }
+            
+            stmt = conn.prepareStatement(" SELECT rev.Rating, rev.Review_Date, rev.Comments, rev.Doctor_Alias, rev.Patient_Alias"
+                                      + " FROM Doctor doc"
+                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
+                                      + " INNER JOIN Reviews rev ON doc.`Alias` = rev.Doctor_Alias"
+                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
+                                      + " WHERE doc.`Alias`= ?");
+            stmt.setString(1, strAlias);
+            ResultSet reviewResultSet = stmt.executeQuery();
+            
+            while(reviewResultSet.next()) {
+                Review rev = new Review(reviewResultSet.getDouble("Rating"),
+                                        reviewResultSet.getString("Comments"),
+                                        reviewResultSet.getString("Review_Date"));
+                reviews.add(rev);
+            }
+            if(resultSet.next()) {
+                doc = new Doctor("",
+                                        resultSet.getString("Gender"),
+                                        resultSet.getInt("nYears_for_License"),
+                                        resultSet.getInt("Number_of_reviews"),
+                                        resultSet.getString("First_Name"),
+                                        resultSet.getString("Last_Name"),
+                                        resultSet.getString("Middle_Initial") != null ? resultSet.getString("Middle_Initial") : "",
+                                        work_addresses,
+                                        specializations,
+                                        resultSet.getDouble("Average_Rating"),
+                                        reviews);
+            } 
+            
+            return doc;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (conn != null) {
+                conn.close();
+            }
         }
         
-        return doc;
     }
     
     public static ArrayList<Patient> getPendingFriendRequests(String strAlias) throws ClassNotFoundException, SQLException {
@@ -161,12 +240,16 @@ public class ProjectDBAO {
     public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException {
         Connection con = null;
         PreparedStatement stmt = null;
-        ArrayList<Doctor> arrDoctors = null;
+        ArrayList<Doctor> arrDoctors = new ArrayList<Doctor>();
+        ArrayList<WorkAddress> work_addresses = new ArrayList<WorkAddress>();
+        ArrayList<String> specializations = new ArrayList<String>();
+        ArrayList<Review> reviews = new ArrayList<Review>();
+        
         boolean paramsUsed = false;
         boolean isFirstNameUsed = false, isLastNameUsed = false, isInitialUsed = false, isGenderUsed = false, 
-             isStreetUsed = false, isPostalCodeUsed = false, isSpecializationUsed = false,
-             isLicenseDurationUsed = false, isKeywordsUsed = false, isReviewedByPatFriendUsed = false,
-             isAvgRatingUsed = false;
+             isStreetUsed = false, isPostalCodeUsed = false, isProvinceUsed = false, isCityUsed = false,
+             isSpecializationUsed = false, isLicenseDurationUsed = false, isKeywordsUsed = false, 
+             isReviewedByPatFriendUsed = false, isAvgRatingUsed = false;
 
         String sqlQuery = "";
 
@@ -314,6 +397,38 @@ public class ProjectDBAO {
         
             sqlQuery += " RE.Comments LIKE ?";
         }
+        String province = ddbao.get_Province();
+        if (!province.isEmpty())
+        {
+            isProvinceUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " reg.Province LIKE ?";
+        }
+        String city = ddbao.get_City();
+        if (!city.isEmpty())
+        {
+            isCityUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " reg.City LIKE ?";
+        }
         boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
         if (isReviewedByPatFriend)
         {
@@ -353,7 +468,7 @@ public class ProjectDBAO {
         try {
             con = getConnection();
 
-            stmt = con.prepareStatement("SELECT UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
+            stmt = con.prepareStatement("SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
                                         + " AVG(RE.Rating) AS 'Average_Rating', COUNT(*) AS 'Total_Reviews', F.To_Alias"
                                         + " FROM Login L"
                                         + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
@@ -364,6 +479,7 @@ public class ProjectDBAO {
                                         + " INNER JOIN Specialization sn ON sn.Spec_ID = S.Spec_ID"
                                         + " INNER JOIN Works ws ON ws.`Alias` = D.`Alias`"
                                         + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
+                                        + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
                                         + sqlQuery);
             int paramCount = 1;
             if (isFirstNameUsed)
@@ -411,6 +527,16 @@ public class ProjectDBAO {
                 stmt.setString(paramCount, keywords);
                 paramCount++;
             }
+            if (isProvinceUsed)
+            {
+                stmt.setString(paramCount, province);
+                paramCount++;
+            }
+            if (isCityUsed)
+            {
+                stmt.setString(paramCount, city);
+                paramCount++;
+            }
             if (isReviewedByPatFriendUsed)
             {
                 stmt.setBoolean(paramCount, isReviewedByPatFriend);
@@ -423,19 +549,18 @@ public class ProjectDBAO {
             }
 
             ResultSet resultSet = stmt.executeQuery();
-            arrDoctors = new ArrayList<Doctor>();
-            while(resultSet.next()) {
-                Doctor d = new Doctor(resultSet.getString("Gender"),
+            while(resultSet.next()) {  
+                Doctor d = new Doctor(resultSet.getString("Alias"),
+                                      resultSet.getString("Gender"),
                                       -1,
                                       resultSet.getInt("Total_Reviews"),
                                       resultSet.getString("First_Name"),
                                       resultSet.getString("Last_Name"),
                                       resultSet.getString("Middle_Initial") != null ? resultSet.getString("Middle_Initial"): "",
-                                      "",
-                                      "",
-                                      "",
+                                      work_addresses,
+                                      specializations,
                                       resultSet.getDouble("Average_Rating"),
-                                      "");
+                                      reviews);
                 arrDoctors.add(d);
             }
 

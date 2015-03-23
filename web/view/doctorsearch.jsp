@@ -49,10 +49,6 @@
                     <td><input type="text" name="docMiddleInitial" size="12" autofocus></td>
                 </tr>
                 <tr>
-                    <td>Postal Code:</td>
-                    <td><input type="text" name="docPostalCode" size="12" autofocus></td>
-                </tr>
-                <tr>
                     <td>Duration of Medical License:</td>
                     <td><input type="text" name="docLicenseDuration" size="12" autofocus></td>
                 </tr>
@@ -73,6 +69,18 @@
                     <td><input type="text" name="docStreet" size="12" autofocus></td>
                 </tr>
                 <tr>
+                    <td>Postal Code:</td>
+                    <td><input type="text" name="docPostalCode" size="12" autofocus></td>
+                </tr>
+                <tr>
+                    <td>Province:</td>
+                    <td><input type="text" name="docProvince" size="12" autofocus></td>
+                </tr>
+                <tr>
+                    <td>City:</td>
+                    <td><input type="text" name="docCity" size="12" autofocus></td>
+                </tr>
+                <tr>
                     <td>Keywords in Review:</td>
                     <td><input type="text" name="docReviewKeywords" size="12" autofocus></td>
                 </tr>
@@ -89,7 +97,8 @@
                         for (Doctor d : doctorsList) {
                 %>
                             <li>
-                                <h2><label value="<%= d.get_Name()%>"><%= d.get_Gender() %> <%= d.get_Avg_Rating() %> <%= d.get_Num_Review() %></label></h2>
+                                <h2><label value=""><%= d.get_Name()%><%= d.get_Gender() %> <%= d.get_Avg_Rating() %> <%= d.get_Num_Review() %></label></h2>
+                                <a href="DoctorServlet?qnum=2&fromAlias=<%= d.get_Alias()%>">View Profile</a>
                             </li>
                 <%
                         }
