@@ -180,27 +180,6 @@ public class ProjectDBAO {
         }
     }
     
-    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        
-        try {
-            con = getConnection();
-            stmt = con.prepareStatement("Update Friendship SET Status = 1 WHERE From_Alias = ? AND To_Alias = ?");
-
-            stmt.setString(1, strFromAlias);
-            stmt.setString(2, strToAlias);
-            stmt.executeUpdate();
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-            if (con != null) {
-                con.close();
-            }
-        }
-    }
-    
     public static ArrayList<Patient> SearchPatients(String strUserAlias, String strAlias, String strProvince, String strCity) throws ClassNotFoundException, SQLException {
         Connection con = null;
         PreparedStatement stmt = null;
