@@ -103,7 +103,7 @@ public class ProjectDBAO {
         Doctor doc;
         Connection conn;
         
-        doc = new Doctor(0, 10, 10, "hi", "p", "n", "st", "p", "d", 10);
+        doc = new Doctor("Male", 10, 10, "hi", "p", "n", "st", "p", "d", 10, "c");
 
         try
         {
@@ -158,6 +158,298 @@ public class ProjectDBAO {
         }
     }
     
+    public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ArrayList<Doctor> arrDoctors = null;
+        boolean paramsUsed = false;
+        boolean isFirstNameUsed = false, isLastNameUsed = false, isInitialUsed = false, isGenderUsed = false, 
+             isStreetUsed = false, isPostalCodeUsed = false, isSpecializationUsed = false,
+             isLicenseDurationUsed = false, isKeywordsUsed = false, isReviewedByPatFriendUsed = false,
+             isAvgRatingUsed = false;
+
+        String sqlQuery = "";
+
+        String firstName = ddbao.get_FirstName();
+        if (!firstName.isEmpty())
+        {
+            isFirstNameUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            
+            sqlQuery += " UD.First_Name LIKE ?"; 
+        }
+
+        String lastName = ddbao.get_LastName();
+        if (!lastName.isEmpty())
+        {
+            isLastNameUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND";
+            }
+            
+            sqlQuery += " UD.Last_Name LIKE ?"; 
+        }
+
+        String middleInitial = ddbao.get_MiddleInitial();
+        if (!middleInitial.isEmpty())
+        {
+            isInitialUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " UD.Middle_Initial LIKE ?";
+        }
+
+        String gender = ddbao.get_Gender();
+        if (!gender.isEmpty())
+        {
+            isGenderUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " UD.Gender LIKE ?";
+        }
+        
+        String street = ddbao.get_Street();
+        if (!street.isEmpty())
+        {
+            isStreetUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " ws.Street LIKE ?";
+        }
+        String postalCode = ddbao.get_PostalCode();
+        if (!postalCode.isEmpty())
+        {
+            isPostalCodeUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " ws.Postal_Code LIKE ?";
+        }
+        String spec = ddbao.get_Specialization();
+        if (!spec.isEmpty())
+        {
+            isSpecializationUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " sn.Description LIKE ?";
+        }
+        int licenseDuration = ddbao.get_LicenseDuration();
+        if (licenseDuration >= 0)
+        {
+            isLicenseDurationUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " (YEAR(CURDATE()) - D.License_Year) > ?";
+        }
+        String keywords = ddbao.get_ReviewKeywords();
+        if (!keywords.isEmpty())
+        {
+            isKeywordsUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " RE.Comments LIKE ?";
+        }
+        boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
+        if (isReviewedByPatFriend)
+        {
+            isReviewedByPatFriendUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND";
+            }
+
+            sqlQuery += " F.Status = ?";
+        }
+       
+        sqlQuery += " GROUP BY UD.First_Name, UD.Middle_Initial, UD.Last_Name";
+
+        double rating = ddbao.get_AvgRating();
+        if (rating >= 0 && rating <=5)
+        {
+            isAvgRatingUsed = true;
+            if (!paramsUsed)
+            {
+                sqlQuery += " WHERE";
+                paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND"; 
+            }
+        
+            sqlQuery += " HAVING AVG(RE.Rating) > ?";
+        }
+        
+        try {
+            con = getConnection();
+
+            stmt = con.prepareStatement("SELECT UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
+                                        + " AVG(RE.Rating) AS 'Average_Rating', COUNT(*) AS 'Total_Reviews', F.To_Alias"
+                                        + " FROM Login L"
+                                        + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
+                                        + " INNER JOIN Reviews RE ON L.Alias = RE.Doctor_Alias"
+                                        + " INNER JOIN Doctor D ON L.Alias = D.Alias" 
+                                        + " INNER JOIN Friendship F ON RE.Patient_Alias = F.To_Alias"
+                                        + " INNER JOIN Specializes S ON S.`Alias` = D.`Alias`"
+                                        + " INNER JOIN Specialization sn ON sn.Spec_ID = S.Spec_ID"
+                                        + " INNER JOIN Works ws ON ws.`Alias` = D.`Alias`"
+                                        + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
+                                        + sqlQuery);
+            int paramCount = 1;
+            if (isFirstNameUsed)
+            {
+                stmt.setString(paramCount, firstName);
+                paramCount++;
+            }
+            if (isLastNameUsed)
+            {
+                stmt.setString(paramCount, lastName);
+                paramCount++;
+            }
+            if (isInitialUsed)
+            {
+                stmt.setString(paramCount, middleInitial);
+                paramCount++;
+            }
+            if (isGenderUsed)
+            {
+                stmt.setString(paramCount, gender);
+                paramCount++;
+            }
+            if (isStreetUsed)
+            {
+                stmt.setString(paramCount, street);
+                paramCount++;
+            }
+            if (isPostalCodeUsed)
+            {
+                stmt.setString(paramCount, postalCode);
+                paramCount++;
+            }
+            if (isSpecializationUsed)
+            {
+                stmt.setString(paramCount, spec);
+                paramCount++;
+            }
+            if (isLicenseDurationUsed)
+            {
+                stmt.setInt(paramCount, licenseDuration);
+                paramCount++;
+            }
+            if (isKeywordsUsed)
+            {
+                stmt.setString(paramCount, keywords);
+                paramCount++;
+            }
+            if (isReviewedByPatFriendUsed)
+            {
+                stmt.setBoolean(paramCount, isReviewedByPatFriend);
+                paramCount++;
+            }
+            if (isAvgRatingUsed)
+            {
+                stmt.setDouble(paramCount, rating);
+                paramCount++;
+            }
+
+            ResultSet resultSet = stmt.executeQuery();
+            arrDoctors = new ArrayList<Doctor>();
+            while(resultSet.next()) {
+                Doctor d = new Doctor(resultSet.getString("Gender"),
+                                      -1,
+                                      resultSet.getInt("Total_Reviews"),
+                                      resultSet.getString("First_Name"),
+                                      resultSet.getString("Last_Name"),
+                                      resultSet.getString("Middle_Initial") != null ? resultSet.getString("Middle_Initial"): "",
+                                      "",
+                                      "",
+                                      "",
+                                      resultSet.getDouble("Average_Rating"),
+                                      "");
+                arrDoctors.add(d);
+            }
+
+            return arrDoctors;
+        } finally {
+           if (stmt != null) {
+               stmt.close();
+           }
+           if (con != null) {
+               con.close();
+           }
+        }
+    }
+        
     public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
         Connection con = null;
         PreparedStatement stmt = null;

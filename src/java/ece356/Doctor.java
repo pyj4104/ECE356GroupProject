@@ -11,23 +11,26 @@ package ece356;
  */
 public class Doctor
 {
-    private int gender, licensed_since, num_review, average_rating;
+    private int licensed_since, num_review;
+    private double average_rating;
     private String first_name, last_name, middle_initial, street, postal_code,
-            description;
+            description, gender, comments;
     
-    public Doctor(int gen, int license_since, int review_num,
-            String firstNom, String lastNom, String middleInit, String st,
-            String post, String descrip, int avg_rate)
+    public Doctor(String gen, int license_since, int review_num,
+            String firstName, String lastName, String middleInit, String st,
+            String post, String descrip, double avg_rate, String comms)
     {
         this.gender = gen;
         this.licensed_since = license_since;
         this.num_review = review_num;
-        this.first_name = firstNom;
-        this.last_name = lastNom;
+        this.first_name = firstName;
+        this.last_name = lastName;
         this.middle_initial = middleInit;
         this.street = st;
         this.description = descrip;
         this.average_rating = avg_rate;
+        this.postal_code = post;
+        this.comments = comms;
     }
     
     public String get_Name()
@@ -38,7 +41,7 @@ public class Doctor
     
     public String get_Gender()
     {
-        return (gender == 0) ? "Male" : "Female";
+        return this.gender;
     }
     
     public String get_Address()
@@ -56,7 +59,7 @@ public class Doctor
         return this.licensed_since;
     }
     
-    public int get_Avg_Rating()
+    public double get_Avg_Rating()
     {
         return this.average_rating;
     }
