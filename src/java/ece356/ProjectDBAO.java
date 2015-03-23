@@ -99,7 +99,7 @@ public class ProjectDBAO {
             }
         }
     }
-    
+
     public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException
     {
         Doctor doc = null;
@@ -736,7 +736,8 @@ public class ProjectDBAO {
         }
     }
         
-    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
+    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException
+    {
         Connection con = null;
         PreparedStatement stmt = null;
         
@@ -756,4 +757,5 @@ public class ProjectDBAO {
             }
         }
     }
+    
 }

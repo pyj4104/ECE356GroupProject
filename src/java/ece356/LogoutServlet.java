@@ -7,8 +7,6 @@ package ece356;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +17,7 @@ import javax.servlet.http.HttpSession;
  *
  * @author yeounjunpark
  */
-public class DocViewProfServlet extends HttpServlet {
+public class LogoutServlet extends HttpServlet {
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -31,13 +29,20 @@ public class DocViewProfServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException
+            throws ServletException, IOException
     {
-        HttpSession session = request.getSession();
-        
-        Doctor prof;
-        
-        //prof = ProjectDBAO.getDocProfile((String) session.getAttribute("Alias"));
+        response.setContentType("text/html;charset=UTF-8");
+        HttpSession session;
+        try (PrintWriter out = response.getWriter())
+        {
+            session = request.getSession(false);
+            if(session!=null)
+            {
+                session.invalidate();
+            }
+            
+            request.getRequestDispatcher("/index.jsp").forward(request, response);
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -51,16 +56,8 @@ public class DocViewProfServlet extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        try
-        {
-            processRequest(request, response);
-        }
-        catch (ClassNotFoundException ex)
-        {
-            Logger.getLogger(DocViewProfServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**
@@ -73,16 +70,8 @@ public class DocViewProfServlet extends HttpServlet {
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
-    {
-        try
-        {
-            processRequest(request, response);
-        }
-        catch (ClassNotFoundException ex)
-        {
-            Logger.getLogger(DocViewProfServlet.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            throws ServletException, IOException {
+        processRequest(request, response);
     }
 
     /**

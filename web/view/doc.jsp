@@ -14,6 +14,7 @@
     <body>
         <h1>Hello Doc!</h1>
         <h2>Doctor Operation</h2>
-        <h3><a href="view/docprofile.jsp">View Doctor Profile</a></h3>
+        <h3><a href="DoctorServlet?qnum=2&fromAlias=<%=(String)request.getSession().getAttribute("alias").toString()%>">View Doctor Profile</a></h3>
+        <a href="LogoutServlet">Log out</a>
     </body>
 </html>

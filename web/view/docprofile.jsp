@@ -58,5 +58,14 @@
         <%
             }
         %>
+        <%
+            if(!(Boolean)request.getSession().getAttribute("doctor"))
+            {
+                %>
+                <p>Write Doctor Review</p>
+                <%
+            }
+        %>
+            
     </body>
 </html>
