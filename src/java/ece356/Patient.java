@@ -5,6 +5,8 @@
  */
 package ece356;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Nirmal
@@ -17,6 +19,9 @@ public class Patient {
     final private String strProvince;
     final private String strCity;
     final private String strEmail;
+    final private int nReviews;
+    final private String strLastReviewDate;
+    HashMap hmFriends;
     
     public Patient(String strFirstName, String strLastName, String strMiddleInitial, 
                     String strAlias, String strProvince, String strCity,
@@ -28,6 +33,24 @@ public class Patient {
         this.strProvince = strProvince;
         this.strCity = strCity;
         this.strEmail = strEmail;
+        this.nReviews = 0;
+        this.strLastReviewDate = "";
+    }
+    
+    public Patient(String strFirstName, String strLastName, String strMiddleInitial, 
+                    String strAlias, String strProvince, String strCity,
+                    String strEmail, int nReviews, String strLastReviewDate,
+                    HashMap hmFriends) {
+        this.strFirstName = strFirstName;
+        this.strLastName = strLastName;
+        this.strMiddleInitial = strMiddleInitial;
+        this.strAlias = strAlias;
+        this.strProvince = strProvince;
+        this.strCity = strCity;
+        this.strEmail = strEmail;
+        this.nReviews = nReviews;
+        this.strLastReviewDate = strLastReviewDate;
+        this.hmFriends = hmFriends;
     }
     
     public String getFirstName() {
@@ -43,7 +66,7 @@ public class Patient {
     }
     
     public String getFullName() {
-        StringBuffer bufName = new StringBuffer();
+        StringBuilder bufName = new StringBuilder();
         bufName.append(strFirstName);
         bufName.append(" ");
         
@@ -70,7 +93,7 @@ public class Patient {
     }
     
     public String getFullAddress() {
-        StringBuffer bufAddr = new StringBuffer();
+        StringBuilder bufAddr = new StringBuilder();
         bufAddr.append(strProvince);
         bufAddr.append(" ");
         bufAddr.append(strCity);
@@ -80,5 +103,17 @@ public class Patient {
     
     public String getEmail () {
         return strEmail;
+    }
+    
+    public String getLastReviewDate() {
+        return strLastReviewDate;
+    }
+    
+    public int getNumberOfReviews() {
+        return nReviews;
+    }
+    
+    public HashMap getFriends() {
+        return hmFriends;
     }
 }

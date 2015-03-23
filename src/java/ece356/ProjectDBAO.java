@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -144,6 +145,187 @@ public class ProjectDBAO {
                                         resultSet.getString("Province"),
                                         resultSet.getString("City"),
                                         resultSet.getString("Email"));
+                arrPatients.add(p);
+            }
+            
+            return arrPatients;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
+     public static void SendFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("INSERT INTO Friendship VALUES(?, ?, 0)");
+
+            stmt.setString(1, strFromAlias);
+            stmt.setString(2, strToAlias);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
+    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("Update Friendship SET Status = 1 WHERE From_Alias = ? AND To_Alias = ?");
+
+            stmt.setString(1, strFromAlias);
+            stmt.setString(2, strToAlias);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
+    public static ArrayList<Patient> SearchPatients(String strUserAlias, String strAlias, String strProvince, String strCity) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        
+        try {
+            int nCount = 0;
+            boolean isAlias = false;
+            boolean isProv = false;
+            boolean isCity = false;
+            
+            ArrayList<Patient> arrPatients = new ArrayList<>();
+            
+            con = getConnection();
+            StringBuilder buffStmt = new StringBuilder();
+            buffStmt.append("SELECT UD.First_Name, UD.Last_Name, UD.Middle_Initial, UD.Email, L.Alias, R.Province, R.City FROM Login L "
+                                        + "INNER JOIN Patient P ON L.Alias = P.Alias "
+                                        + "INNER JOIN Region R ON R.Region_ID = P.Region_ID "
+                                        + "INNER JOIN User_Detail UD ON UD.UserID = L.UserID ");
+            
+            
+            if (!strAlias.isEmpty()) {
+                buffStmt.append(" WHERE (L.Alias LIKE ?)");
+                nCount++;
+                isAlias = true;
+            }
+            
+            if (!strProvince.isEmpty()) {
+                if (nCount == 1) {
+                    buffStmt.append(" OR (R.Province LIKE ?)");
+                } else {
+                    buffStmt.append(" WHERE (R.Province LIKE ?)");
+                }
+                nCount++;
+                isProv = true;
+            }
+            
+            if (!strCity.isEmpty()) {
+                if (nCount > 1) {
+                    buffStmt.append(" OR (R.City LIKE ?)");
+                } else {
+                    buffStmt.append(" WHERE (R.City LIKE ?)");
+                }
+                nCount++;
+                isCity = true;
+            }
+            
+//            buffStmt.append(" GROUP BY L.Alias");
+            
+            stmt = con.prepareStatement(buffStmt.toString());
+             
+            if (nCount == 3) {
+                stmt.setString(1, "%" + strAlias + "%");
+                stmt.setString(2, "%" + strProvince + "%");
+                stmt.setString(3, "%" + strCity + "%");
+            } else if (nCount == 2) {
+                if (isAlias && isProv) {
+                    stmt.setString(1, "%" + strAlias + "%");
+                    stmt.setString(2, "%" + strProvince + "%");
+                }
+                
+                if (isAlias && isCity) {
+                    stmt.setString(1, "%" + strAlias + "%");
+                    stmt.setString(2, "%" + strCity + "%");
+                }
+                
+                if (isProv && isCity) {
+                    stmt.setString(1, "%" + strProvince + "%");
+                    stmt.setString(2, "%" + strCity + "%");
+                }
+            } else if (nCount == 1) {
+                if (isAlias) {
+                    stmt.setString(1, "%" + strAlias + "%");
+                }
+                
+                if (isCity) {
+                    stmt.setString(1, "%" + strCity + "%");
+                }
+                
+                if (isProv) {
+                    stmt.setString(1, "%" + strProvince + "%");
+                }
+            }
+            
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                String alias = resultSet.getString("Alias");
+                int nReviews = 0;
+                String strLatestReviewDate = "";
+                
+                stmt = con.prepareStatement("SELECT R.Patient_Alias, COUNT(*), max(R.Review_Date) FROM Reviews R WHERE R.Patient_Alias = ? GROUP BY R.Patient_Alias");
+                stmt.setString(1, alias);
+                
+                ResultSet rs = stmt.executeQuery();
+                if (rs.next()) {
+                    nReviews = rs.getInt("COUNT(*)");
+                    strLatestReviewDate = rs.getString("max(R.Review_Date)");
+                }
+                
+                HashMap hmFriends = new HashMap();
+                stmt = con.prepareStatement("SELECT * FROM Friendship WHERE (To_Alias = ? AND From_Alias = ?) OR (To_Alias = ? AND From_Alias = ?)");
+                stmt.setString(1, strUserAlias);
+                stmt.setString(2, alias);
+                stmt.setString(3, alias);
+                stmt.setString(4, strUserAlias);
+                ResultSet friendSet = stmt.executeQuery();
+                
+                if (friendSet.next()) {
+                    if ((friendSet.getString("To_Alias").contentEquals(strUserAlias)) || (friendSet.getString("From_Alias").contentEquals(strUserAlias) && friendSet.getInt("Status") == 1))
+                        hmFriends.put(strUserAlias, friendSet.getInt("Status"));
+                    else if (friendSet.getString("From_Alias").contentEquals(strUserAlias) && friendSet.getInt("Status") != 1)
+                        hmFriends.put(strUserAlias, -2);
+                }
+                else
+                    hmFriends.put(strUserAlias, -1);                            // No friend request sent
+                    
+                Patient p = new Patient(resultSet.getString("First_Name"),
+                                        resultSet.getString("Last_Name"),
+                                        (resultSet.getString("Middle_Initial") == null) ? "" : resultSet.getString("Middle_Initial"),
+                                        alias,
+                                        resultSet.getString("Province"),
+                                        resultSet.getString("City"),
+                                        resultSet.getString("Email"),
+                                        nReviews,
+                                        strLatestReviewDate,
+                                        hmFriends);
                 arrPatients.add(p);
             }
             
