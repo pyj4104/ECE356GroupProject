@@ -34,6 +34,7 @@ public class FriendRequestsServlet extends HttpServlet {
      * @throws ServletException if a servlet-specific error occurs
      * @throws IOException if an I/O error occurs
      * @throws java.lang.ClassNotFoundException
+     * @throws java.sql.SQLException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ClassNotFoundException, SQLException {
@@ -49,7 +50,7 @@ public class FriendRequestsServlet extends HttpServlet {
                     ArrayList<Patient> arrFriendRequests = ProjectDBAO.getPendingFriendRequests(session.getAttribute("alias").toString());
                     request.setAttribute("friendrequests", arrFriendRequests);
                     getServletContext().getRequestDispatcher(url).forward(request, response);
-                } catch (Exception e) {
+                } catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
                     request.setAttribute("exception", e);
                 }
             } 
@@ -59,13 +60,26 @@ public class FriendRequestsServlet extends HttpServlet {
                 HttpSession session = request.getSession();
                 String url = "/view/friendrequests.jsp";
                 
-                String strFromAlias = request.getParameter("fromalias").toString();
+                String strFromAlias = request.getParameter("fromalias");
                 String strToAlias = session.getAttribute("alias").toString();
                 ProjectDBAO.ConfirmFriendRequest(strToAlias,strFromAlias);
                 ArrayList<Patient> arrFriendRequests = ProjectDBAO.getPendingFriendRequests(strToAlias);
                 request.setAttribute("friendrequests", arrFriendRequests);
                 getServletContext().getRequestDispatcher(url).forward(request, response);
-            } catch (Exception e) {
+            } catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
+                request.setAttribute("exception", e);
+            }
+        } else if (request.getParameter("toalias") != null){
+            // Send friend request
+            try {
+                HttpSession session = request.getSession();
+                String url = "/PatientSearchServlet";
+                
+                String strToAlias = request.getParameter("toalias");
+                String strFromAlias = session.getAttribute("alias").toString();
+                ProjectDBAO.SendFriendRequest(strToAlias,strFromAlias);
+                getServletContext().getRequestDispatcher(url).forward(request, response);
+            } catch (ClassNotFoundException | SQLException | ServletException | IOException e) {
                 request.setAttribute("exception", e);
             }
         }

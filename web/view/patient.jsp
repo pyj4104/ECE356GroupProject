@@ -15,13 +15,9 @@
         <h1>Hello Patient!</h1>
         <h2>Patient Operation</h2>
         <ul>
-            <li><a href="#">Search Patient</a></li>
-            <li><a href="#">Add Friend</a></li>
+             <li><a href="./view/patientsearch.jsp">Search Patient</a></li>
             <li><a href="FriendRequestsServlet?op=1">View Friend Request</a></li>
             <li><a href="view/doctorsearch.jsp">Search Doctor</a></li>
-            <li><a href="#">View Doctor Profile</a></li>
-            <li><a href="#">View Doctor Review</a></li>
-            <li><a href="#">Write Doctor Review</a></li>
         </ul>
     </body>
 </html>
