@@ -75,7 +75,7 @@
                 <tr>
                     <td>Select Province:</td>
                     <td>
-                        <select name="pProv">
+                        <select name="docProvince">
                             <option value="">Select Province</option>
                             <option value="Ontario">Ontario</option>
                             <option value="Quebec">Quebec</option>
@@ -93,7 +93,7 @@
                 <tr>
                     <td>Select City</td>
                     <td>
-                        <select name="pCity">
+                        <select name="docCity">
                             <option value="">Select City</option>
                             <%! ArrayList<String> cities;%>
                             <%
