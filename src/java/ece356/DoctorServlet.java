@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 
 /**
  *
@@ -36,7 +37,7 @@ public class DoctorServlet extends HttpServlet {
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ClassNotFoundException, SQLException,
-            ParseException {
+            ParseException, NamingException {
         String strQueryNum = request.getParameter("qnum");
         int i_queryNum = Integer.parseInt(strQueryNum);
         String url;
@@ -268,6 +269,8 @@ public class DoctorServlet extends HttpServlet {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -289,6 +292,8 @@ public class DoctorServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
+            Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(DoctorServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

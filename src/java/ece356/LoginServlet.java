@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.HttpServlet;
@@ -34,12 +35,18 @@ public class LoginServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException
+            throws ServletException, IOException, ClassNotFoundException, SQLException, NamingException
     {
-        HttpSession session = request.getSession();
+        HttpSession curSession = request.getSession();
         String url;
         int nVerificationRet = -1;
         String strInputAlias = "";
+        
+        if(curSession!=null)
+        {
+            curSession.invalidate();
+        }
+        HttpSession session = request.getSession();
         
         // 'Go back' feature
         if (session.getAttribute("alias") != null && session.getAttribute("doctor") != null) {
@@ -108,6 +115,8 @@ public class LoginServlet extends HttpServlet {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -127,6 +136,8 @@ public class LoginServlet extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(LoginServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

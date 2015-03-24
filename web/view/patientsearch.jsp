@@ -14,6 +14,11 @@
         <title>Patient Search</title>
     </head>
     <body>
+        <% 
+            if (session.getAttribute("doctor").toString() != "false") {
+                response.sendRedirect("./error/error404.jsp"); 
+            }
+        %>
         <h1>Patient Search</h1>
         <%
                 if (request.getAttribute("patientsList") != null) {
@@ -112,14 +117,7 @@
                     </table>
         <%        }
                }
-        %>
-       <h2><a href="LoginServlet"><< Go Back</a></h2>
-       <%
-            } else {
-        %>
-        <h2><a href="../LoginServlet"><< Go Back</a></h2>
-        <% 
-            } 
+            }
         %>
     </body>
 </html>

@@ -9,13 +9,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -34,7 +37,7 @@ public class WriteReviewServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException, ParseException {
+            throws ServletException, IOException, ClassNotFoundException, SQLException, ParseException, NamingException {
         String doctor_alias = "";
         if (request.getParameter("doc_alias") != null && !(request.getParameter("doc_alias").isEmpty()))
         {
@@ -84,11 +87,18 @@ public class WriteReviewServlet extends HttpServlet {
             }
         }
         
-        String url = "./view/docprofile.jsp";
+        String url = "DoctorServlet?qnum=2&fromAlias=" + doctor_alias;
         Doctor doc = ProjectDBAO.getDocProfile(doctor_alias);
         ProjectDBAO.WriteReview(patient_alias, doctor_alias, star_rating, comments);
         request.setAttribute("docProfile", doc);
-        request.getRequestDispatcher(url).forward(request, response);
+        
+        HashMap hmReviews = ProjectDBAO.getReviews(doctor_alias);
+        HttpSession session = request.getSession();
+        session.setAttribute("Reviews", hmReviews);
+        session.setAttribute("nReviews", hmReviews.size());
+        
+        response.sendRedirect(url);
+//        request.getRequestDispatcher(url) (request, response);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -111,6 +121,8 @@ public class WriteReviewServlet extends HttpServlet {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -132,6 +144,8 @@ public class WriteReviewServlet extends HttpServlet {
         } catch (SQLException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ParseException ex) {
+            Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

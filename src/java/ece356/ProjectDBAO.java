@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sql.DataSource;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 public class ProjectDBAO {
 
@@ -28,7 +32,7 @@ public class ProjectDBAO {
     public static final String pwd = "ece356gp";
 
     public static void testConnection()
-            throws ClassNotFoundException, SQLException {
+            throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         try {
             con = getConnection();
@@ -40,9 +44,21 @@ public class ProjectDBAO {
     }
 
     public static Connection getConnection()
-            throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection con = DriverManager. getConnection(url, user, pwd);
+            throws ClassNotFoundException, SQLException, NamingException {
+        InitialContext cxt = new InitialContext(); 
+        if (cxt == null) { 
+            throw new RuntimeException("Unable to create naming context!"); 
+        }       
+        Context dbContext = (Context) cxt.lookup("java:comp/env"); 
+        DataSource ds = (DataSource) dbContext.lookup("jdbc/myDatasource"); 
+
+        if (ds == null) { 
+            throw new RuntimeException("Data source not found!"); 
+        } 
+        
+//        Class.forName("com.mysql.jdbc.Driver");
+//        Connection con = DriverManager. getConnection(url, user, pwd);
+        Connection con = ds.getConnection();
         Statement stmt = null;
         try {
             con.createStatement();
@@ -57,7 +73,7 @@ public class ProjectDBAO {
     }
 
     public static int AuthenticateLogin(String strUsername, String strPassword)
-            throws ClassNotFoundException, SQLException {
+            throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         CallableStatement cstmt = null;
         
@@ -100,7 +116,7 @@ public class ProjectDBAO {
         }
     }
 
-   public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException
+   public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException, NamingException
     {
         Doctor doc = null;
         ArrayList<WorkAddress> work_addresses = new ArrayList<WorkAddress>();
@@ -108,7 +124,7 @@ public class ProjectDBAO {
         ArrayList<Review> reviews = new ArrayList<Review>();
         Connection conn = null;
         PreparedStatement stmt = null;
-        HashMap hmReviews = new HashMap();
+        HashMap hmReviews = getReviews(strAlias);
 
         try
         {
@@ -158,25 +174,7 @@ public class ProjectDBAO {
                 work_addresses.add(wAddr);
             }
             
-            stmt = conn.prepareStatement(" SELECT rev.Rating, rev.Review_Date, rev.Comments, rev.Doctor_Alias, rev.Patient_Alias"
-                                      + " FROM Doctor doc"
-                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
-                                      + " INNER JOIN Reviews rev ON doc.`Alias` = rev.Doctor_Alias"
-                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
-                                      + " WHERE doc.`Alias`= ? ORDER BY rev.Review_Date DESC");
-            stmt.setString(1, strAlias);
-            ResultSet reviewResultSet = stmt.executeQuery();
             
-            int nReviewNum = 1;
-            while(reviewResultSet.next()) {
-                Review rev = new Review(reviewResultSet.getString("Patient_Alias"),
-                                        reviewResultSet.getString("Doctor_Alias"),
-                                        reviewResultSet.getDouble("Rating"),
-                                        reviewResultSet.getString("Comments"),
-                                        reviewResultSet.getString("Review_Date"));
-                //reviews.add(rev);
-                hmReviews.put(nReviewNum++, rev);
-            }
             if(resultSet.next()) {
                        doc = new Doctor(resultSet.getString("Alias"),
                                         resultSet.getString("Gender"),
@@ -203,8 +201,46 @@ public class ProjectDBAO {
         }
         
     }
+   
+    public static HashMap getReviews(String strDocAlias) throws ClassNotFoundException, SQLException, NamingException, ParseException {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        HashMap hmReviews= null;
+        
+        try {
+            con = getConnection();
+            hmReviews = new HashMap();
+            stmt = con.prepareStatement(" SELECT rev.Rating, rev.Review_Date, rev.Comments, rev.Doctor_Alias, rev.Patient_Alias"
+                                      + " FROM Doctor doc"
+                                      + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
+                                      + " INNER JOIN Reviews rev ON doc.`Alias` = rev.Doctor_Alias"
+                                      + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
+                                      + " WHERE doc.`Alias`= ? ORDER BY rev.Review_Date DESC");
+            stmt.setString(1, strDocAlias);
+            ResultSet reviewResultSet = stmt.executeQuery();
+            
+            int nReviewNum = 1;
+            while(reviewResultSet.next()) {
+                Review rev = new Review(reviewResultSet.getString("Patient_Alias"),
+                                        reviewResultSet.getString("Doctor_Alias"),
+                                        reviewResultSet.getDouble("Rating"),
+                                        reviewResultSet.getString("Comments"),
+                                        reviewResultSet.getString("Review_Date"));
+                hmReviews.put(nReviewNum++, rev);
+            }
+            
+            return hmReviews;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
     
-    public static ArrayList<Patient> getPendingFriendRequests(String strAlias) throws ClassNotFoundException, SQLException {
+    public static ArrayList<Patient> getPendingFriendRequests(String strAlias) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         ArrayList<Patient> arrPatients = null;
@@ -244,7 +280,7 @@ public class ProjectDBAO {
         }
     }
     
-     public static void SendFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException {
+     public static void SendFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         
@@ -265,7 +301,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static ArrayList<Patient> SearchPatients(String strUserAlias, String strAlias, String strProvince, String strCity) throws ClassNotFoundException, SQLException {
+    public static ArrayList<Patient> SearchPatients(String strUserAlias, String strAlias, String strProvince, String strCity) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         
@@ -404,7 +440,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException {
+    public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         ArrayList<Doctor> arrDoctors = new ArrayList<Doctor>();
@@ -771,7 +807,7 @@ public class ProjectDBAO {
     }
     
     public static void WriteReview(String patient_alias, String doctor_alias, 
-            double star_rating, String comments) throws ClassNotFoundException, SQLException {
+            double star_rating, String comments) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         
@@ -796,7 +832,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException
+    public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException, NamingException
     {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -818,7 +854,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static ArrayList GetCities() throws ClassNotFoundException, SQLException
+    public static ArrayList GetCities() throws ClassNotFoundException, SQLException, NamingException
     {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -844,7 +880,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static ArrayList GetSpecializations() throws ClassNotFoundException, SQLException
+    public static ArrayList GetSpecializations() throws ClassNotFoundException, SQLException, NamingException
     {
         Connection con = null;
         PreparedStatement stmt = null;
