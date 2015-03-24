@@ -12,7 +12,8 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form method="post" action="../WriteReviewServlet?doc_alias=&pat_alias=">  
+        <form method="post" 
+              action="../WriteReviewServlet?doc_alias=<%= request.getSession().getAttribute("docAlias") %>&pat_alias=<%=request.getSession().getAttribute("alias")%>">  
             <h2>Write a Review</h2>
             <table>
                 <tr>
@@ -35,7 +36,7 @@
                 </tr>
                 <tr>
                     <td>Comments:</td>
-                    <td><input type="text" name="docComments" size="12" autofocus></td>
+                    <td><input type="text" name="docComments" size="12" autofocus required></td>
                 </tr>
             </table>
             <h3><input type="submit" value="Search"></h3>

@@ -8,6 +8,7 @@ package ece356;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletException;
@@ -33,7 +34,7 @@ public class WriteReviewServlet extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException {
+            throws ServletException, IOException, ClassNotFoundException, SQLException, ParseException {
         String doctor_alias = "";
         if (request.getParameter("doc_alias") != null && !(request.getParameter("doc_alias").isEmpty()))
         {
@@ -82,9 +83,11 @@ public class WriteReviewServlet extends HttpServlet {
                 throw ex;
             }
         }
-            
+        
         String url = "./view/docprofile.jsp";
+        Doctor doc = ProjectDBAO.getDocProfile(doctor_alias);
         ProjectDBAO.WriteReview(patient_alias, doctor_alias, star_rating, comments);
+        request.setAttribute("docProfile", doc);
         request.getRequestDispatcher(url).forward(request, response);
     }
 
@@ -106,6 +109,8 @@ public class WriteReviewServlet extends HttpServlet {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -125,6 +130,8 @@ public class WriteReviewServlet extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
             Logger.getLogger(WriteReviewServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

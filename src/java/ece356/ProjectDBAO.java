@@ -113,7 +113,7 @@ public class ProjectDBAO {
         try
         {
             conn = ProjectDBAO.getConnection();
-            stmt = conn.prepareStatement(" SELECT UD.Email, UD.Gender, UD.First_Name, UD.Last_Name, UD.Middle_Initial, "
+            stmt = conn.prepareStatement(" SELECT doc.Alias, UD.Email, UD.Gender, UD.First_Name, UD.Last_Name, UD.Middle_Initial, "
                                       + " (YEAR(CURDATE()) - doc.License_Year) AS 'nYears_for_License',"
                                       + " (Select AVG(Re.Rating) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Average_Rating',"
                                       + " (Select COUNT(*) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Number_of_reviews'"
@@ -178,7 +178,7 @@ public class ProjectDBAO {
                 hmReviews.put(nReviewNum++, rev);
             }
             if(resultSet.next()) {
-                doc = new Doctor("",
+                       doc = new Doctor(resultSet.getString("Alias"),
                                         resultSet.getString("Gender"),
                                         resultSet.getInt("nYears_for_License"),
                                         resultSet.getInt("Number_of_reviews"),
@@ -649,7 +649,7 @@ public class ProjectDBAO {
                                         + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
                                         + sqlQuery);*/
             stmt = con.prepareStatement(
-            "SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
+            "SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Email, UD.Last_Name, UD.Gender,"
           + "     REV.Average_Rating, REV.Total_Reviews"
           + "     FROM Login L"
           + "     INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
