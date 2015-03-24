@@ -6,3 +6,5 @@
 -Make sure that inputs are checked for proper type
 -Make sure that review keywords and names are case-insensitive in doctor search
 -Check that postal code is searched by prefix and not if it contains the string?
+-Make sure that postal code is all caps?
+-Make sure that browser navigation works correctly with logout

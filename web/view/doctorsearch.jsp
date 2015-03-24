@@ -88,7 +88,7 @@
                 <tr>
                     <td>Select Province:</td>
                     <td>
-                        <select name="docProv">
+                        <select name="docProvince">
                             <option value="">Select Province</option>
                             <option value="Ontario">Ontario</option>
                             <option value="Quebec">Quebec</option>

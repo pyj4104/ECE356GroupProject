@@ -481,7 +481,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " UD.Gender LIKE ?";
+            sqlQuery += " UD.Gender = ?";
         }
         
         String street = ddbao.get_Street();
@@ -498,7 +498,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " ws.Street LIKE ?";
+            sqlQuery += " WSR.Street LIKE ?";
         }
         String postalCode = ddbao.get_PostalCode();
         if (!postalCode.isEmpty())
@@ -514,7 +514,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " ws.Postal_Code LIKE ?";
+            sqlQuery += " WSR.Postal_Code LIKE ?";
         }
         String spec = ddbao.get_Specialization();
         if (!spec.isEmpty())
@@ -530,7 +530,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " sn.Description LIKE ?";
+            sqlQuery += " SPE.Description LIKE ?";
         }
         int licenseDuration = ddbao.get_LicenseDuration();
         if (licenseDuration >= 0)
@@ -546,7 +546,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " (YEAR(CURDATE()) - D.License_Year) > ?";
+            sqlQuery += " (YEAR(CURDATE()) - D.License_Year) >= ?";
         }
         String keywords = ddbao.get_ReviewKeywords();
         if (!keywords.isEmpty())
@@ -562,7 +562,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " RE.Comments LIKE ?";
+            sqlQuery += " REV.Comments LIKE ?";
         }
         String province = ddbao.get_Province();
         if (!province.isEmpty())
@@ -578,7 +578,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " reg.Province LIKE ?";
+            sqlQuery += " WSR.Province LIKE ?";
         }
         String city = ddbao.get_City();
         if (!city.isEmpty())
@@ -594,7 +594,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " reg.City LIKE ?";
+            sqlQuery += " WSR.City LIKE ?";
         }
         boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
         if (isReviewedByPatFriend)
@@ -610,7 +610,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND";
             }
 
-            sqlQuery += " F.Status = ?";
+            sqlQuery += " FRE.Status = ?";
         }
        
         sqlQuery += " GROUP BY UD.First_Name, UD.Middle_Initial, UD.Last_Name";
@@ -619,17 +619,7 @@ public class ProjectDBAO {
         if (rating >= 0 && rating <=5)
         {
             isAvgRatingUsed = true;
-            if (!paramsUsed)
-            {
-                sqlQuery += " WHERE";
-                paramsUsed = true;
-            }
-            else
-            {
-                sqlQuery += " AND"; 
-            }
-        
-            sqlQuery += " HAVING AVG(RE.Rating) > ?";
+            sqlQuery += " HAVING REV.Average_Rating > ?";
         }
         
         try {
@@ -657,28 +647,29 @@ public class ProjectDBAO {
           + "     LEFT JOIN"
           + "     ("
           + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', AVG(RE.Rating) AS 'Average_Rating',"
-          + "                         COUNT(*) AS 'Total_Reviews'"
+          + "                         COUNT(*) AS 'Total_Reviews', RE.Comments as 'Comments'"
           + "           FROM Reviews RE"
           + "     INNER JOIN Doctor D ON (RE.Doctor_Alias = D.Alias)"
           + "     ) REV ON REV.Doctor_Alias = L.Alias"
           + "     LEFT JOIN"
           + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', sn.Description AS 'Description'"
           + "           FROM Specializes S" 
           + "     INNER JOIN Doctor D ON (S.`Alias` = D.`Alias`)"
           + "     INNER JOIN Specialization sn ON (sn.Spec_ID = S.Spec_ID)"
           + "     ) SPE ON SPE.Doctor_Alias = L.Alias"
           + "     LEFT JOIN"
           + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
-          + "          FROM Works ws" 
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', ws.Street AS 'Street',"
+          + "          ws.Postal_Code AS 'Postal_Code', reg.City AS 'City', reg.Province AS 'Province'"
+          + "           FROM Works ws" 
           + "     INNER JOIN Doctor D ON ws.`Alias` = D.`Alias`"
           + "     INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
           + "     INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
           + "     ) WSR ON WSR.Doctor_Alias = L.Alias"
           + "     LEFT JOIN"
           + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias'"
+          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', F.Status AS 'Status'"
           + "           FROM Friendship F" 
           + "     INNER JOIN Doctor D ON (D.Alias = F.To_Alias)"
           + "     INNER JOIN Reviews RE ON (RE.Patient_Alias = F.To_Alias)"
@@ -687,17 +678,17 @@ public class ProjectDBAO {
             int paramCount = 1;
             if (isFirstNameUsed)
             {
-                stmt.setString(paramCount, firstName);
+                stmt.setString(paramCount, "%"+firstName+"%");
                 paramCount++;
             }
             if (isLastNameUsed)
             {
-                stmt.setString(paramCount, lastName);
+                stmt.setString(paramCount, "%"+lastName+"%");
                 paramCount++;
             }
             if (isInitialUsed)
             {
-                stmt.setString(paramCount, middleInitial);
+                stmt.setString(paramCount, "%"+middleInitial+"%");
                 paramCount++;
             }
             if (isGenderUsed)
@@ -707,17 +698,17 @@ public class ProjectDBAO {
             }
             if (isStreetUsed)
             {
-                stmt.setString(paramCount, street);
+                stmt.setString(paramCount, "%"+street+"%");
                 paramCount++;
             }
             if (isPostalCodeUsed)
             {
-                stmt.setString(paramCount, postalCode);
+                stmt.setString(paramCount, "%"+postalCode+"%");
                 paramCount++;
             }
             if (isSpecializationUsed)
             {
-                stmt.setString(paramCount, spec);
+                stmt.setString(paramCount, "%"+spec+"%");
                 paramCount++;
             }
             if (isLicenseDurationUsed)
@@ -727,17 +718,17 @@ public class ProjectDBAO {
             }
             if (isKeywordsUsed)
             {
-                stmt.setString(paramCount, keywords);
+                stmt.setString(paramCount, "%"+keywords+"%");
                 paramCount++;
             }
             if (isProvinceUsed)
             {
-                stmt.setString(paramCount, province);
+                stmt.setString(paramCount, "%"+province+"%");
                 paramCount++;
             }
             if (isCityUsed)
             {
-                stmt.setString(paramCount, city);
+                stmt.setString(paramCount, "%"+city+"%");
                 paramCount++;
             }
             if (isReviewedByPatFriendUsed)
