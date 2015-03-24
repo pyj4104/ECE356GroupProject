@@ -6,6 +6,7 @@
 package ece356;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  *
@@ -19,15 +20,14 @@ public class Doctor
     private ArrayList<String> specializations;
     private ArrayList<WorkAddress> work_addresses;
     private ArrayList<Review> reviews;
-    
-    public Doctor()
-    {
+    private HashMap hmReviews;
+
+    public Doctor() {
     }
     
     public Doctor(String alias, String gen, int license_since, int review_num,
             String firstName, String lastName, String middleInit, ArrayList<WorkAddress> wAddrs,
-            ArrayList<String> specs, double avg_rate, ArrayList<Review> reviews)
-    {
+            ArrayList<String> specs, double avg_rate, String mail, ArrayList<Review> reviews) {
         this.alias = alias;
         this.gender = gen;
         this.licensed_since = license_since;
@@ -39,6 +39,24 @@ public class Doctor
         this.specializations = specs;
         this.average_rating = avg_rate;
         this.reviews = reviews;
+        this.email = mail;
+    }
+    
+    public Doctor(String alias, String gen, int license_since, int review_num,
+            String firstName, String lastName, String middleInit, ArrayList<WorkAddress> wAddrs,
+            ArrayList<String> specs, double avg_rate, String mail, HashMap reviews) {
+        this.alias = alias;
+        this.gender = gen;
+        this.licensed_since = license_since;
+        this.num_review = review_num;
+        this.first_name = firstName;
+        this.last_name = lastName;
+        this.middle_initial = middleInit;
+        this.work_addresses = wAddrs;
+        this.specializations = specs;
+        this.average_rating = avg_rate;
+        this.hmReviews = reviews;
+        this.email = mail;
     }
 
     
@@ -104,5 +122,9 @@ public class Doctor
     
     public ArrayList<Review> get_Reviews() {
         return this.reviews;
+    }
+    
+    public HashMap get_Reviews_Hashmap() {
+        return this.hmReviews;
     }
 }

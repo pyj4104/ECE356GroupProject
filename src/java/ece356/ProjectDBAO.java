@@ -100,7 +100,7 @@ public class ProjectDBAO {
         }
     }
 
-    public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException
+   public static Doctor getDocProfile(String strAlias) throws ClassNotFoundException, SQLException, ParseException
     {
         Doctor doc = null;
         ArrayList<WorkAddress> work_addresses = new ArrayList<WorkAddress>();
@@ -108,11 +108,12 @@ public class ProjectDBAO {
         ArrayList<Review> reviews = new ArrayList<Review>();
         Connection conn = null;
         PreparedStatement stmt = null;
+        HashMap hmReviews = new HashMap();
 
         try
         {
             conn = ProjectDBAO.getConnection();
-            stmt = conn.prepareStatement(" SELECT UD.Gender, UD.First_Name, UD.Last_Name, UD.Middle_Initial,"
+            stmt = conn.prepareStatement(" SELECT UD.Email, UD.Gender, UD.First_Name, UD.Last_Name, UD.Middle_Initial, "
                                       + " (YEAR(CURDATE()) - doc.License_Year) AS 'nYears_for_License',"
                                       + " (Select AVG(Re.Rating) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Average_Rating',"
                                       + " (Select COUNT(*) FROM Reviews Re WHERE Re.Doctor_Alias = ?) AS 'Number_of_reviews'"
@@ -162,15 +163,19 @@ public class ProjectDBAO {
                                       + " INNER JOIN Login L ON doc.`Alias` = L.`Alias`"
                                       + " INNER JOIN Reviews rev ON doc.`Alias` = rev.Doctor_Alias"
                                       + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID" 
-                                      + " WHERE doc.`Alias`= ?");
+                                      + " WHERE doc.`Alias`= ? ORDER BY rev.Review_Date DESC");
             stmt.setString(1, strAlias);
             ResultSet reviewResultSet = stmt.executeQuery();
             
+            int nReviewNum = 1;
             while(reviewResultSet.next()) {
-                Review rev = new Review(reviewResultSet.getDouble("Rating"),
+                Review rev = new Review(reviewResultSet.getString("Patient_Alias"),
+                                        reviewResultSet.getString("Doctor_Alias"),
+                                        reviewResultSet.getDouble("Rating"),
                                         reviewResultSet.getString("Comments"),
                                         reviewResultSet.getString("Review_Date"));
-                reviews.add(rev);
+                //reviews.add(rev);
+                hmReviews.put(nReviewNum++, rev);
             }
             if(resultSet.next()) {
                 doc = new Doctor("",
@@ -183,7 +188,8 @@ public class ProjectDBAO {
                                         work_addresses,
                                         specializations,
                                         resultSet.getDouble("Average_Rating"),
-                                        reviews);
+                                        resultSet.getString("Email"),
+                                        hmReviews);
             } 
             
             return doc;
@@ -777,6 +783,7 @@ public class ProjectDBAO {
                                       work_addresses,
                                       specializations,
                                       resultSet.getDouble("Average_Rating"),
+                                      resultSet.getString("Email"),
                                       reviews);
                 arrDoctors.add(d);
             }

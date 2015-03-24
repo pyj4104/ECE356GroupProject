@@ -20,6 +20,10 @@
         <servlet-name>LogoutServlet</servlet-name>
         <servlet-class>ece356.LogoutServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ViewReviewServlet</servlet-name>
+        <servlet-class>ece356.ViewReviewServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
         <url-pattern>/LoginServlet</url-pattern>
@@ -44,6 +48,10 @@
         <error-code>404</error-code>
         <location>/view/error/error404.jsp</location>
     </error-page>
+    <servlet-mapping>
+        <servlet-name>ViewReviewServlet</servlet-name>
+        <url-pattern>/ViewReviewServlet</url-pattern>
+    </servlet-mapping>
     <session-config>
         <session-timeout>
             30
