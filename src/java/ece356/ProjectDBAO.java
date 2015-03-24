@@ -534,7 +534,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " WSR.Street LIKE ?";
+            sqlQuery += " ws.Street LIKE ?";
         }
         String postalCode = ddbao.get_PostalCode();
         if (!postalCode.isEmpty())
@@ -550,7 +550,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " WSR.Postal_Code LIKE ?";
+            sqlQuery += " ws.Postal_Code LIKE ?";
         }
         String spec = ddbao.get_Specialization();
         if (!spec.isEmpty())
@@ -566,7 +566,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " SPE.Description LIKE ?";
+            sqlQuery += " sn.Description LIKE ?";
         }
         int licenseDuration = ddbao.get_LicenseDuration();
         if (licenseDuration >= 0)
@@ -598,7 +598,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " REV.Comments LIKE ?";
+            sqlQuery += " RE.Comments LIKE ?";
         }
         String province = ddbao.get_Province();
         if (!province.isEmpty())
@@ -614,7 +614,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " WSR.Province LIKE ?";
+            sqlQuery += " reg.Province LIKE ?";
         }
         String city = ddbao.get_City();
         if (!city.isEmpty())
@@ -630,7 +630,7 @@ public class ProjectDBAO {
                 sqlQuery += " AND"; 
             }
         
-            sqlQuery += " WSR.City LIKE ?";
+            sqlQuery += " reg.City LIKE ?";
         }
         boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
         if (isReviewedByPatFriend)
@@ -646,71 +646,36 @@ public class ProjectDBAO {
                 sqlQuery += " AND";
             }
 
-            sqlQuery += " FRE.Status = ?";
+            sqlQuery += " F.Status = ?";
         }
        
-        sqlQuery += " GROUP BY UD.First_Name, UD.Middle_Initial, UD.Last_Name";
+        sqlQuery += " GROUP BY D.Alias";
 
         double rating = ddbao.get_AvgRating();
         if (rating >= 0 && rating <=5)
         {
             isAvgRatingUsed = true;
-            sqlQuery += " HAVING REV.Average_Rating > ?";
+            sqlQuery += " HAVING Average_Rating > ?";
         }
         
         try {
             con = getConnection();
 
-            /*stmt = con.prepareStatement("SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender,"
-                                        + " AVG(RE.Rating) AS 'Average_Rating', COUNT(*) AS 'Total_Reviews', F.To_Alias"
-                                        + " FROM Login L"
-                                        + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
-                                        + " INNER JOIN Reviews RE ON L.Alias = RE.Doctor_Alias"
-                                        + " INNER JOIN Doctor D ON L.Alias = D.Alias" 
-                                        + " INNER JOIN Friendship F ON RE.Patient_Alias = F.To_Alias"
-                                        + " INNER JOIN Specializes S ON S.`Alias` = D.`Alias`"
-                                        + " INNER JOIN Specialization sn ON sn.Spec_ID = S.Spec_ID"
-                                        + " INNER JOIN Works ws ON ws.`Alias` = D.`Alias`"
-                                        + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
-                                        + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
-                                        + sqlQuery);*/
             stmt = con.prepareStatement(
-            "SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Email, UD.Last_Name, UD.Gender,"
-          + "     REV.Average_Rating, REV.Total_Reviews"
-          + "     FROM Login L"
-          + "     INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
-          + "     INNER JOIN Doctor D ON L.Alias = D.Alias"
-          + "     LEFT JOIN"
-          + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', AVG(RE.Rating) AS 'Average_Rating',"
-          + "                         COUNT(*) AS 'Total_Reviews', RE.Comments as 'Comments'"
-          + "           FROM Reviews RE"
-          + "     INNER JOIN Doctor D ON (RE.Doctor_Alias = D.Alias)"
-          + "     ) REV ON REV.Doctor_Alias = L.Alias"
-          + "     LEFT JOIN"
-          + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', sn.Description AS 'Description'"
-          + "           FROM Specializes S" 
-          + "     INNER JOIN Doctor D ON (S.`Alias` = D.`Alias`)"
-          + "     INNER JOIN Specialization sn ON (sn.Spec_ID = S.Spec_ID)"
-          + "     ) SPE ON SPE.Doctor_Alias = L.Alias"
-          + "     LEFT JOIN"
-          + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', ws.Street AS 'Street',"
-          + "          ws.Postal_Code AS 'Postal_Code', reg.City AS 'City', reg.Province AS 'Province'"
-          + "           FROM Works ws" 
-          + "     INNER JOIN Doctor D ON ws.`Alias` = D.`Alias`"
-          + "     INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
-          + "     INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
-          + "     ) WSR ON WSR.Doctor_Alias = L.Alias"
-          + "     LEFT JOIN"
-          + "     ("
-          + "         SELECT DISTINCT D.Alias AS 'Doctor_Alias', F.Status AS 'Status'"
-          + "           FROM Friendship F" 
-          + "     INNER JOIN Doctor D ON (D.Alias = F.To_Alias)"
-          + "     INNER JOIN Reviews RE ON (RE.Patient_Alias = F.To_Alias)"
-          + "     ) FRE ON FRE.Doctor_Alias = L.Alias"
-          + sqlQuery);
+                    "SELECT L.Alias, UD.First_Name, UD.Middle_Initial, UD.Last_Name, UD.Gender, UD.Email,"
+                + " AVG(RE.Rating) AS 'Average_Rating',"
+                + " (SELECT COUNT(*) FROM Reviews RE WHERE RE.Doctor_Alias = D.Alias) AS 'Total_Reviews'"
+                + " FROM Login L"
+                + " INNER JOIN User_Detail UD ON L.UserID = UD.UserID"
+                + " INNER JOIN Doctor D ON L.Alias = D.Alias"
+                + " LEFT JOIN Reviews RE ON (RE.Doctor_Alias = D.Alias)"
+                + " LEFT JOIN Specializes S ON (S.`Alias` = D.`Alias`)"
+                + " LEFT JOIN Specialization sn ON (sn.Spec_ID = S.Spec_ID)"
+                + " INNER JOIN Works ws ON (ws.`Alias` = D.`Alias`)"
+                + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
+                + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
+                + " LEFT JOIN Friendship F ON (RE.Patient_Alias = F.To_Alias)"
+                + sqlQuery);
             int paramCount = 1;
             if (isFirstNameUsed)
             {

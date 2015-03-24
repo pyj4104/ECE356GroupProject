@@ -75,7 +75,13 @@
                 </tr>
                 <tr>
                     <td>Gender:</td>
-                    <td><input type="text" name="docGender" size="12" autofocus></td>
+                    <td>
+                        <select name="docGender">
+                            <option value="" />
+                            <option value="Male">Male</option>
+                            <option value="Female" />Female</option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Specialization: </td>
