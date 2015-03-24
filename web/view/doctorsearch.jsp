@@ -54,7 +54,19 @@
                 </tr>
                 <tr>
                     <td>Average Star Rating:</td>
-                    <td><input type="text" name="docAvgRating" size="12" autofocus></td>
+                    <td>
+                        <select name="docAvgRating">
+                            <option value="">Select Average Rating</option>
+                            <%! double i;%>
+                            <%
+                                for(i=1;i<=5;i+=0.5) {
+                            %>
+                            <option value="<%= i%>"><%= i%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Gender:</td>
