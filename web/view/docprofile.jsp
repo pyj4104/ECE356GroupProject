@@ -61,9 +61,9 @@
         <%
             if(!(Boolean)request.getSession().getAttribute("doctor"))
             {
-                %>
-                <p>Write Doctor Review</p>
-                <%
+        %>
+                <a href="WriteReviewServlet?docAlias=<%= doctor.get_Alias() %>&patAlias=<%=session.getAttribute("Alias")%>">Write Doctor Review</a>
+        <%
             }
         %>
             

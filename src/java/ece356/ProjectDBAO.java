@@ -398,26 +398,6 @@ public class ProjectDBAO {
         }
     }
     
-    public static void WriteReview(String strFromAlias) throws ClassNotFoundException, SQLException {
-        Connection con = null;
-        PreparedStatement stmt = null;
-        
-        try {
-            con = getConnection();
-            stmt = con.prepareStatement("INSERT INTO Friendship VALUES(?, ?, 0)");
-
-            stmt.setString(1, strFromAlias);
-            stmt.executeUpdate();
-        } finally {
-            if (stmt != null) {
-                stmt.close();
-            }
-            if (con != null) {
-                con.close();
-            }
-        }
-    }
-    
     public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException {
         Connection con = null;
         PreparedStatement stmt = null;
@@ -791,7 +771,33 @@ public class ProjectDBAO {
            }
         }
     }
+    
+    public static void WriteReview(String patient_alias, String doctor_alias, 
+            double star_rating, String comments) throws ClassNotFoundException, SQLException {
+        Connection con = null;
+        PreparedStatement stmt = null;
         
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("INSERT INTO Reviews VALUES(?, NOW(),"
+                    + " ?, ?, ?)"
+                    );
+
+            stmt.setDouble(1, star_rating);
+            stmt.setString(2, comments);
+            stmt.setString(3, doctor_alias);
+            stmt.setString(4, patient_alias);
+            stmt.executeUpdate();
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
+    
     public static void ConfirmFriendRequest(String strToAlias, String strFromAlias) throws ClassNotFoundException, SQLException
     {
         Connection con = null;
