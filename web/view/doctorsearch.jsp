@@ -73,12 +73,39 @@
                     <td><input type="text" name="docPostalCode" size="12" autofocus></td>
                 </tr>
                 <tr>
-                    <td>Province:</td>
-                    <td><input type="text" name="docProvince" size="12" autofocus></td>
+                    <td>Select Province:</td>
+                    <td>
+                        <select name="pProv">
+                            <option value="">Select Province</option>
+                            <option value="Ontario">Ontario</option>
+                            <option value="Quebec">Quebec</option>
+                            <option value="Nova Scotia">Nova Scotia</option>
+                            <option value="New Brunswick">New Brunswick</option>
+                            <option value="Manitoba">Manitoba</option>
+                            <option value="British Columbia">British Columbia</option>
+                            <option value="PEI">PEI</option>
+                            <option value="Saskatchewan">Saskatchewan</option>
+                            <option value="Alberta">Alberta</option>
+                            <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
-                    <td>City:</td>
-                    <td><input type="text" name="docCity" size="12" autofocus></td>
+                    <td>Select City</td>
+                    <td>
+                        <select name="pCity">
+                            <option value="">Select City</option>
+                            <%! ArrayList<String> cities;%>
+                            <%
+                                cities = (ArrayList<String>) session.getAttribute("cities");
+                                for (String c : cities) {
+                            %>
+                            <option value="<%= c%>"><%= c%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Keywords in Review:</td>

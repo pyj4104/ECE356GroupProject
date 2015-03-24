@@ -821,4 +821,29 @@ public class ProjectDBAO {
         }
     }
     
+    public static ArrayList GetCities() throws ClassNotFoundException, SQLException
+    {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ArrayList<String> arrCities = new ArrayList<>();
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("Select City From Region");
+
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                arrCities.add(resultSet.getString("City"));
+            }
+            
+            return arrCities;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
 }

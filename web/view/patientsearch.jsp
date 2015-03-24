@@ -32,9 +32,10 @@
                     <td><input type="text" name="pAlias" size="25" autofocus</td>
                 </tr>
                 <tr>
-                    <td>Enter Province:</td>
+                    <td>Select Province:</td>
                     <td>
                         <select name="pProv">
+                            <option value="">Select Province</option>
                             <option value="Ontario">Ontario</option>
                             <option value="Quebec">Quebec</option>
                             <option value="Nova Scotia">Nova Scotia</option>
@@ -49,8 +50,21 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>Enter City</td>
-                    <td><input type="text" name="pCity" size="25" autofocus=""></td>
+                    <td>Select City</td>
+                    <td>
+                        <select name="pCity">
+                            <option value="">Select City</option>
+                            <%! ArrayList<String> cities;%>
+                            <%
+                                cities = (ArrayList<String>) session.getAttribute("cities");
+                                for (String c : cities) {
+                            %>
+                            <option value="<%= c%>"><%= c%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
                 </tr>
             </table>    
             <input type="submit" value="Search">
