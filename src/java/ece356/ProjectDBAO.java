@@ -619,17 +619,7 @@ public class ProjectDBAO {
         if (rating >= 0 && rating <=5)
         {
             isAvgRatingUsed = true;
-            if (!paramsUsed)
-            {
-                sqlQuery += " WHERE";
-                paramsUsed = true;
-            }
-            else
-            {
-                sqlQuery += " AND"; 
-            }
-        
-            sqlQuery += " HAVING AVG(RE.Rating) > ?";
+            sqlQuery += " HAVING REV.Average_Rating > ?";
         }
         
         try {
@@ -687,37 +677,37 @@ public class ProjectDBAO {
             int paramCount = 1;
             if (isFirstNameUsed)
             {
-                stmt.setString(paramCount, firstName);
+                stmt.setString(paramCount, "%"+firstName+"%");
                 paramCount++;
             }
             if (isLastNameUsed)
             {
-                stmt.setString(paramCount, lastName);
+                stmt.setString(paramCount, "%"+lastName+"%");
                 paramCount++;
             }
             if (isInitialUsed)
             {
-                stmt.setString(paramCount, middleInitial);
+                stmt.setString(paramCount, "%"+middleInitial+"%");
                 paramCount++;
             }
             if (isGenderUsed)
             {
-                stmt.setString(paramCount, gender);
+                stmt.setString(paramCount, "%"+gender+"%");
                 paramCount++;
             }
             if (isStreetUsed)
             {
-                stmt.setString(paramCount, street);
+                stmt.setString(paramCount, "%"+street+"%");
                 paramCount++;
             }
             if (isPostalCodeUsed)
             {
-                stmt.setString(paramCount, postalCode);
+                stmt.setString(paramCount, "%"+postalCode+"%");
                 paramCount++;
             }
             if (isSpecializationUsed)
             {
-                stmt.setString(paramCount, spec);
+                stmt.setString(paramCount, "%"+spec+"%");
                 paramCount++;
             }
             if (isLicenseDurationUsed)
@@ -727,17 +717,17 @@ public class ProjectDBAO {
             }
             if (isKeywordsUsed)
             {
-                stmt.setString(paramCount, keywords);
+                stmt.setString(paramCount, "%"+keywords+"%");
                 paramCount++;
             }
             if (isProvinceUsed)
             {
-                stmt.setString(paramCount, province);
+                stmt.setString(paramCount, "%"+province+"%");
                 paramCount++;
             }
             if (isCityUsed)
             {
-                stmt.setString(paramCount, city);
+                stmt.setString(paramCount, "%"+city+"%");
                 paramCount++;
             }
             if (isReviewedByPatFriendUsed)
