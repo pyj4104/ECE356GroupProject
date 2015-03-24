@@ -105,7 +105,7 @@ CREATE TABLE Specializes
 
 CREATE TABLE Reviews
 (
-	Rating FLOAT,
+	Rating FLOAT(12, 2),
 	Review_Date TIMESTAMP,
 	Comments VARCHAR(1000),
 	Doctor_Alias VARCHAR(25),
