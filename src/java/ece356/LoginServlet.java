@@ -51,7 +51,7 @@ public class LoginServlet extends HttpServlet {
         } else {
             strInputAlias = request.getParameter("userInputAlias");
             String strInputPassword = request.getParameter("userInputPassword");
-
+            
             nVerificationRet = -1;
             try {
                 nVerificationRet = ProjectDBAO.AuthenticateLogin(strInputAlias, strInputPassword);
@@ -67,6 +67,10 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("alias", strInputAlias);
             ArrayList<String> arrCities = ProjectDBAO.GetCities();
             session.setAttribute("cities", arrCities);
+            
+            ArrayList<String> arrSpecs = ProjectDBAO.GetSpecializations();
+            session.setAttribute("specs", arrSpecs);
+            
             if (nVerificationRet == 1)
             {
                 session.setAttribute("doctor", true);

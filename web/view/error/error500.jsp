@@ -13,5 +13,6 @@
     </head>
     <body>
         <h1>Please log in first.</h1>
+        <h3><a href="/ECE356GroupProject/">Login Page</a></h3>
     </body>
 </html>

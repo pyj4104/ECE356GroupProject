@@ -82,6 +82,7 @@
        %>
                     <table>
         <%          for (Patient p : patientList) {
+                    if (!p.getAlias().contentEquals(strUserAlias)) {
         %>
                         <tr>
                             <h4><label>Name: <%= p.getFullName() %></label></h4>
@@ -91,7 +92,6 @@
                             <h4><label>No. of reviews: <%= p.getNumberOfReviews()%></label></h4>
                             <h4><label>Latest Review Date: <%= (!p.getLastReviewDate().isEmpty()) ? p.getLastReviewDate() : "N/A" %></label></h4>
                             <%
-                            if (!p.getAlias().contentEquals(strUserAlias)) {
                                 if (Integer.parseInt(p.getFriends().get(strUserAlias).toString()) == -1) {
                             %>
                                 <a href="FriendRequestsServlet?toalias=<%= p.getAlias()%>">Add as Friend</a>

@@ -61,8 +61,21 @@
                     <td><input type="text" name="docGender" size="12" autofocus></td>
                 </tr>
                 <tr>
-                    <td>Profession:</td>
-                    <td><input type="text" name="docSpec" size="12" autofocus></td>
+                    <td>Specialization: </td>
+                    <td>
+                        <select name="docSpec">
+                            <option value="">Select Specialization</option>
+                            <%! ArrayList<String> specs;%>
+                            <%
+                                specs = (ArrayList<String>) session.getAttribute("specs");
+                                for (String s : specs) {
+                            %>
+                            <option value="<%= s%>"><%= s%></option>
+                            <%
+                                }
+                            %>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Street:</td>
@@ -75,7 +88,7 @@
                 <tr>
                     <td>Select Province:</td>
                     <td>
-                        <select name="pProv">
+                        <select name="docProv">
                             <option value="">Select Province</option>
                             <option value="Ontario">Ontario</option>
                             <option value="Quebec">Quebec</option>
@@ -93,7 +106,7 @@
                 <tr>
                     <td>Select City</td>
                     <td>
-                        <select name="pCity">
+                        <select name="docCity">
                             <option value="">Select City</option>
                             <%! ArrayList<String> cities;%>
                             <%
@@ -118,24 +131,27 @@
             </table>
             <h3><input type="submit" value="Search"></h3>
         </form>
+                        
         <%
                 if (doctorsList != null) {
-                    if (!doctorsList.isEmpty()) {
-                        for (Doctor d : doctorsList) {
+                    if (!doctorsList.isEmpty()) { %>
+                        <table>
+                <%      for (Doctor d : doctorsList) {
                 %>
-                            <li>
-                                <h2><label value=""><%= d.get_Name()%><%= d.get_Gender() %> <%= d.get_Avg_Rating() %> <%= d.get_Num_Review() %></label></h2>
-                                <a href="DoctorServlet?qnum=2&fromAlias=<%= d.get_Alias()%>">View Profile</a>
-                            </li>
+                        <tr>
+                            <h4><label>Name: <%= d.get_Name()%></label></h4>
+                            <h4><label>Gender: <%= d.get_Gender() %></label></h4>
+                            <h4><label>Avg. Rating <%= d.get_Avg_Rating() %></label></h4>
+                            <h4><label>No. of reviews: <%= d.get_Num_Review() %></label></h4>
+                        </tr>            
                 <%
-                        }
-                    } else {
+                        } %>
+                        </table>
+                <%  } else {
                 %>
                     <li><h2>No doctors found.</h2></li>
                 <%
                     }
-                    
-                } else {
                     
                 }
             %>

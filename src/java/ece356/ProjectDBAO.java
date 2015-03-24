@@ -852,4 +852,30 @@ public class ProjectDBAO {
             }
         }
     }
+    
+    public static ArrayList GetSpecializations() throws ClassNotFoundException, SQLException
+    {
+        Connection con = null;
+        PreparedStatement stmt = null;
+        ArrayList<String> arrSpecs = new ArrayList<>();
+        
+        try {
+            con = getConnection();
+            stmt = con.prepareStatement("Select Description From Specialization");
+
+            ResultSet resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                arrSpecs.add(resultSet.getString("Description"));
+            }
+            
+            return arrSpecs;
+        } finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        }
+    }
 }
