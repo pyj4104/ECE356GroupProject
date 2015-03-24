@@ -143,7 +143,8 @@
                             <h4><label>Gender: <%= d.get_Gender() %></label></h4>
                             <h4><label>Avg. Rating <%= d.get_Avg_Rating() %></label></h4>
                             <h4><label>No. of reviews: <%= d.get_Num_Review() %></label></h4>
-                        </tr>            
+                        </tr>
+                        <hr>
                 <%
                         } %>
                         </table>
