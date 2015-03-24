@@ -10,8 +10,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Page Not Found</title>
+        <link rel="stylesheet" href="../css/bootstrap.css"  type="text/css"/>
     </head>
     <body>
-        <h1>Invalid page. Please check your url.</h1>
+        <div class="container">
+            <div class="page-header text-center center-block">
+                <h1>
+                    <div class="glyphicon glyphicon-remove"></div><br>
+                    Invalid page. Please check your url.
+                </h1>
+            </div>
+        </div>
     </body>
 </html>

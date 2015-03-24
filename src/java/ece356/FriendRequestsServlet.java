@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -37,7 +38,7 @@ public class FriendRequestsServlet extends HttpServlet {
      * @throws java.sql.SQLException
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, ClassNotFoundException, SQLException {
+            throws ServletException, IOException, ClassNotFoundException, SQLException, NamingException {
         
         // View pending friend requests
         if (request.getParameter("op") != null) {
@@ -103,6 +104,8 @@ public class FriendRequestsServlet extends HttpServlet {
             Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
             Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
+            Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -122,6 +125,8 @@ public class FriendRequestsServlet extends HttpServlet {
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NamingException ex) {
             Logger.getLogger(FriendRequestsServlet.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

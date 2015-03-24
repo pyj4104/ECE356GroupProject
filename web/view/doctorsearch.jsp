@@ -13,6 +13,11 @@
         <title>Search for a Doctor:</title>
     </head>
     <body>
+        <% 
+            if (session.getAttribute("doctor").toString() != "false") {
+                response.sendRedirect("./error/error404.jsp"); 
+            }
+        %>
         <h1>Doctors</h1>
         <ul>
             
@@ -161,6 +166,7 @@
                             <h4><label>Gender: <%= d.get_Gender() %></label></h4>
                             <h4><label>Avg. Rating <%= d.get_Avg_Rating() %></label></h4>
                             <h4><label>No. of reviews: <%= d.get_Num_Review() %></label></h4>
+                            <a href="DoctorServlet?qnum=2&fromAlias=<%= d.get_Alias()%>">View Profile</a>
                         </tr>
                         <hr>
                 <%
@@ -174,14 +180,5 @@
                     
                 }
             %>
-            <%
-                if (doctorsList != null) { 
-            %>
-            <h2><a href="LoginServlet"><< Go Back</a></h2>
-            <%
-                } else { 
-            %>
-            <h2><a href="../LoginServlet"><< Go Back</a></h2>
-            <% } %>
     </body>
 </html>

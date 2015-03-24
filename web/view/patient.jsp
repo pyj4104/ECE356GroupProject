@@ -10,15 +10,29 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Welcome to PatBook!</title>
+        <link rel="stylesheet" href="css/bootstrap.css"  type="text/css"/>
     </head>
     <body>
-        <h1>Hello Patient!</h1>
-        <h2>Patient Operation</h2>
-        <ul>
-            <li><a href="./view/patientsearch.jsp">Search Patient</a></li>
-            <li><a href="FriendRequestsServlet?op=1">View Friend Request</a></li>
-            <li><a href="view/doctorsearch.jsp">Search Doctor</a></li>
-        </ul>
-        <a href="LogoutServlet">Log out</a>
+        <% 
+            if (session.getAttribute("doctor").toString() != "false") {
+                response.sendRedirect("./error/error404.jsp"); 
+            }
+        %>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container-fluid">
+               <div id="navbar" class="collapse navbar-collapse navbar-left">
+                   <a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a>
+               </div>
+            </div>
+        </nav>
+        <div class="container" style="padding-top: 85px">
+            <div class="col-lg-4 col-lg-offset-5">
+                <div class="btn-group-vertical" role="group">
+                    <a class="btn btn-default" href="./view/patientsearch.jsp">Search Patient</a>
+                    <a class="btn btn-default" href="FriendRequestsServlet?op=1">View Friend Requests</a>
+                    <a class="btn btn-default" href="view/doctorsearch.jsp">Search Doctor</a>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
