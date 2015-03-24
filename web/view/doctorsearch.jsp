@@ -97,7 +97,7 @@
                         for (Doctor d : doctorsList) {
                 %>
                             <li>
-                                <h2><label value=""><%= d.get_Name()%> <%= d.get_Gender() %> <%= d.get_Avg_Rating() %> <%= d.get_Num_Review() %></label></h2>
+                                <h2><label value=""><%= d.get_Name()%><%= d.get_Gender() %> <%= d.get_Avg_Rating() %> <%= d.get_Num_Review() %></label></h2>
                                 <a href="DoctorServlet?qnum=2&fromAlias=<%= d.get_Alias()%>">View Profile</a>
                             </li>
                 <%
@@ -112,6 +112,14 @@
                     
                 }
             %>
-        <h2><a href="LoginServlet"><< Go Back</a></h2>
+            <%
+                if (doctorsList != null) { 
+            %>
+            <h2><a href="LoginServlet"><< Go Back</a></h2>
+            <%
+                } else { 
+            %>
+            <h2><a href="../LoginServlet"><< Go Back</a></h2>
+            <% } %>
     </body>
 </html>

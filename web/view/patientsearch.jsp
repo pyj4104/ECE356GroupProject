@@ -33,7 +33,20 @@
                 </tr>
                 <tr>
                     <td>Enter Province:</td>
-                    <td><input type="text" name="pProv" size="25" autofocus></td>
+                    <td>
+                        <select name="pProv">
+                            <option value="Ontario">Ontario</option>
+                            <option value="Quebec">Quebec</option>
+                            <option value="Nova Scotia">Nova Scotia</option>
+                            <option value="New Brunswick">New Brunswick</option>
+                            <option value="Manitoba">Manitoba</option>
+                            <option value="British Columbia">British Columbia</option>
+                            <option value="PEI">PEI</option>
+                            <option value="Saskatchewan">Saskatchewan</option>
+                            <option value="Alberta">Alberta</option>
+                            <option value="Newfoundland and Labrador">Newfoundland and Labrador</option>
+                        </select>
+                    </td>
                 </tr>
                 <tr>
                     <td>Enter City</td>

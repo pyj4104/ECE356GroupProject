@@ -3,6 +3,11 @@
     Created on : Mar 23, 2015, 1:20:36 AM
     Author     : suvignes
 --%>
+<%@page import="java.util.Iterator"%>
+<%@page import="java.util.Set"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="ece356.Review" %>
 <%@page import="ece356.Doctor" %>
 <%@page import="ece356.WorkAddress" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -17,6 +22,7 @@
         <%! Doctor doctor;%>
         <%
             doctor = (Doctor) request.getAttribute("docProfile");
+            session.setAttribute("docName", doctor.get_Name());
             if (doctor != null)
             {
         %>
@@ -50,9 +56,35 @@
                     <td>Number of Reviews:</td>
                     <td><%= doctor.get_Num_Review() %></td>
                 </tr>
+                <% if (session.getAttribute("doctor").toString() == "true") { %>
+                <tr>
+                    <td>Email:</td>
+                    <td><%= doctor.get_Email() %></td>
+                </tr>
+                <% } %>
                 <tr>
                     <td>List of Reviews:</td>
-                    <td><%= doctor.get_Reviews() %></td>
+                    <td>
+                        <ul>
+                        <% 
+                           HashMap hmReviews = doctor.get_Reviews_Hashmap();
+                           
+                           Iterator i = hmReviews.entrySet().iterator();
+                           if (i.hasNext()) {
+                            session.setAttribute("Reviews", hmReviews);
+                            session.setAttribute("nReviews", hmReviews.size());
+                            while (i.hasNext()) {
+                                Map.Entry e = (Map.Entry) i.next();
+                                %>
+                                <li><a href="ViewReviewServlet?reviewid=<%= (e.getKey()).toString() %>"><%= ((Review)(e.getValue())).toString() %></a></li>
+                                <%
+                            }
+                           } else {
+                        %>
+                        <li>No Reviews</li>
+                        <% } %>
+                        </ul>
+                    </td>
                 </tr>
             </table>
         <%
@@ -67,5 +99,6 @@
             }
         %>
             
+        <h2><a href="view/doctorsearch.jsp"><< Go Back</a></h2>
     </body>
 </html>

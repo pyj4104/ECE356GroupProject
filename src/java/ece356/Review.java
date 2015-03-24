@@ -13,22 +13,36 @@ import java.text.SimpleDateFormat;
  * @author suvignes
  */
 public class Review {
+    private String patient_alias;
+    private String doctor_alias;
     private double star_rating;
     private String comments;
     private Date review_date;
     private SimpleDateFormat ft = 
       new SimpleDateFormat ("yyyy-MM-dd hh:mm:ss.SSS");
     
-    public Review(double rating, String comms, Date revDate) {
+    public Review(String patient_alias, String doctor_alias, double rating, String comms, Date revDate) {
+        this.patient_alias = patient_alias;
+        this.doctor_alias = doctor_alias;
         this.star_rating = rating;
         this.comments = comms;
         this.review_date = revDate;
     }
     
-    public Review(double rating, String comms, String revDate) throws ParseException {
+    public Review(String patient_alias, String doctor_alias, double rating, String comms, String revDate) throws ParseException {
+        this.patient_alias = patient_alias;
+        this.doctor_alias = doctor_alias;
         this.star_rating = rating;
         this.comments = comms;
         this.review_date = ft.parse(revDate);
+    }
+    
+    public String get_DoctorAlias() {
+        return this.doctor_alias;
+    }
+    
+    public String get_PatientAlias() {
+        return this.patient_alias;
     }
     
     public double get_Rating() {
