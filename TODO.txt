@@ -1,0 +1,8 @@
+-Make sure that 'Go Back' works from View Doctor Profile to Doctor Search
+-Make sure that everything is tested with the stored procedures
+-Make sure that we have error pages
+-Make sure that we check on docProfile page that viewer is Doctor before displaying email
+-Make sure that after we're logged in, if we go to the home page, then we should not get the login screen again
+-Make sure that inputs are checked for proper type
+-Make sure that review keywords and names are case-insensitive in doctor search
+-Check that postal code is searched by prefix and not if it contains the string?

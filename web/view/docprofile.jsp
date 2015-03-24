@@ -22,9 +22,10 @@
         <%! Doctor doctor;%>
         <%
             doctor = (Doctor) request.getAttribute("docProfile");
-            session.setAttribute("docName", doctor.get_Name());
             if (doctor != null)
             {
+               session.setAttribute("docName", doctor.get_Name());
+               session.setAttribute("docAlias", doctor.get_Alias());
         %>
         
             <table>
@@ -90,6 +91,15 @@
         <%
             }
         %>
+        <%
+            if(!(Boolean)request.getSession().getAttribute("doctor"))
+            {
+        %>
+                <a href="view/writereview.jsp">Write Doctor Review</a>
+        <%
+            }
+        %>
+            
         <h2><a href="view/doctorsearch.jsp"><< Go Back</a></h2>
     </body>
 </html>
