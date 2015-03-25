@@ -149,7 +149,6 @@ CALL Test_CheckReviews("doc_aiken", @star, @rev);
 SELECT @star, @rev;
 
 SELECT COUNT(R.Review_Date), AVG(R.Rating)
-    INTO @rev, @star
     FROM Reviews R
     WHERE Doctor_Alias = "doc_aiken";
 SELECT @star, @rev;
