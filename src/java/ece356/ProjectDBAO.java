@@ -456,6 +456,33 @@ public class ProjectDBAO {
 
         String sqlQuery = "";
 
+        boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
+        if (isReviewedByPatFriend)
+        {
+            isReviewedByPatFriendUsed = true;
+            if (!paramsUsed)
+            {
+                paramsUsed = true;
+            }
+            sqlQuery += " LEFT JOIN"
+                    + " ("
+                    + "     SELECT *"
+                    + "      FROM Friendship F"
+                    + " INNER JOIN Reviews REV"
+                    + "         ON (REV.Patient_Alias = F.To_Alias)"
+                    + "      WHERE F.Status = ?"
+                    + "        AND F.From_Alias = ?"
+                    + "      UNION"
+                    + "     SELECT *" 
+                    + "       FROM Friendship F"
+                    + " INNER JOIN Reviews REV"
+                    + "         ON (REV.Patient_Alias = F.From_Alias)"
+                    + "      WHERE F.Status = ?"
+                    + "        AND F.To_Alias = ?"
+                    + " ) FRE ON FRE.Doctor_Alias = D.Alias"
+            + " WHERE FRE.Status = ?";
+        }
+        
         String firstName = ddbao.get_FirstName();
         if (!firstName.isEmpty())
         {
@@ -464,6 +491,10 @@ public class ProjectDBAO {
             {
                 sqlQuery += " WHERE";
                 paramsUsed = true;
+            }
+            else
+            {
+                sqlQuery += " AND";
             }
             
             sqlQuery += " UD.First_Name LIKE ?"; 
@@ -632,24 +663,6 @@ public class ProjectDBAO {
         
             sqlQuery += " reg.City LIKE ?";
         }
-        boolean isReviewedByPatFriend = ddbao.get_IsReviewedByPatientFriend();
-        if (isReviewedByPatFriend)
-        {
-            isReviewedByPatFriendUsed = true;
-            if (!paramsUsed)
-            {
-                sqlQuery += " WHERE";
-                paramsUsed = true;
-            }
-            else
-            {
-                sqlQuery += " AND";
-            }
-
-            sqlQuery += " F.Status = ?";
-            sqlQuery += " AND (F.From_Alias = ?";
-            sqlQuery += " OR F.To_Alias = ?)";
-        }
        
         sqlQuery += " GROUP BY D.Alias";
 
@@ -676,9 +689,21 @@ public class ProjectDBAO {
                 + " INNER JOIN Works ws ON (ws.`Alias` = D.`Alias`)"
                 + " INNER JOIN Work_Address wa ON (wa.Postal_Code = ws.Postal_Code AND wa.Street = ws.Street)"
                 + " INNER JOIN Region reg ON (reg.Region_ID = wa.Region_ID)"
-                + " LEFT JOIN Friendship F ON (RE.Patient_Alias = F.To_Alias)"
                 + sqlQuery);
             int paramCount = 1;
+            if (isReviewedByPatFriendUsed)
+            {
+                stmt.setInt(paramCount, 1);
+                paramCount++;
+                stmt.setString(paramCount, patientAlias);
+                paramCount++;
+                stmt.setInt(paramCount, 1);
+                paramCount++;
+                stmt.setString(paramCount, patientAlias);
+                paramCount++;
+                stmt.setInt(paramCount, 1);
+                paramCount++;
+            }
             if (isFirstNameUsed)
             {
                 stmt.setString(paramCount, "%"+firstName+"%");
@@ -732,15 +757,6 @@ public class ProjectDBAO {
             if (isCityUsed)
             {
                 stmt.setString(paramCount, "%"+city+"%");
-                paramCount++;
-            }
-            if (isReviewedByPatFriendUsed)
-            {
-                stmt.setInt(paramCount, 1);
-                paramCount++;
-                stmt.setString(paramCount, patientAlias);
-                paramCount++;
-                stmt.setString(paramCount, patientAlias);
                 paramCount++;
             }
             if (isAvgRatingUsed)
