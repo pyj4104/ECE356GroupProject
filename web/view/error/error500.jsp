@@ -17,9 +17,8 @@
         <div class="page-header text-center center-block">
             <h1>
                 <div class="glyphicon glyphicon-eye-close"></div><br>
-                Please log in first.
+                Error
             </h1>
-            <a href="/ECE356GroupProject/" class="btn btn-primary">Login Page</a>
         </div>
         </div>
     </body>
