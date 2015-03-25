@@ -74,12 +74,12 @@ public class WriteReviewServlet extends HttpServlet {
                 throw ex;
             }
         }
-        int star_rating = -1;
+        double star_rating = -1;
         if (request.getParameter("docRating") != null && !(request.getParameter("docRating").isEmpty()))
         {
             try
             {
-                star_rating = Integer.parseInt(request.getParameter("docRating"));
+                star_rating = Double.parseDouble(request.getParameter("docRating"));
             }
             catch (Exception ex)
             {
