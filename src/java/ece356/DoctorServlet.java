@@ -7,6 +7,7 @@ package ece356;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.Math;
 import java.sql.SQLException;
 import java.text.ParseException;
 import javax.servlet.ServletException;
@@ -128,8 +129,8 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docLicenseDuration = Integer.parseInt(
-                            request.getParameter("docLicenseDuration").replace(".", ""));
+                    docLicenseDuration = (int) Math.round(Double.parseDouble(
+                            request.getParameter("docLicenseDuration")));
                 }
                 catch (NumberFormatException nfe)
                 {
