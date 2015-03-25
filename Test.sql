@@ -32,8 +32,6 @@ BEGIN
     AND reg.City = city
     AND sn.Description = specialization
     AND (YEAR(CURDATE())-D.License_Year) = num_years_licensed;
-/* returns in num_matches the total number of doctors that match exactly on all the given
-criteria: gender ('male' or 'female'), city, specialization, and number of years licensed */
 END @@
 DELIMITER;
 
@@ -56,15 +54,21 @@ DELIMITER @@
 CREATE PROCEDURE Test_DoctorSearchFriendReview
 (IN patient_alias VARCHAR(20), IN review_keyword VARCHAR(20), OUT num_matches INT)
 BEGIN
-/* returns in num_matches the total number of doctors who have been reviewed by friends of
-the given patient, and where at least one of the reviews for that doctor (not necessarily
-written by a friend) contains the given keyword (case-sensitive) */
-    SELECT COUNT(DISTINCT R.Doctor_Alias) INTO num_matches
-    FROM Reviews R
-        INNER JOIN Friendship F1
-            ON (R.Patient_Alias = F1.To_Alias)
-    WHERE R.Comments LIKE CONCAT("%", review_keyword, "%")
-    AND F1.From_Alias = patient_alias;
+    SELECT DOC INTO num_matches
+    FROM(
+        SELECT COUNT(DISTINCT R.Doctor_Alias) AS DOC
+        FROM Reviews R
+            INNER JOIN Friendship F1
+                ON (R.Patient_Alias = F1.To_Alias)
+        WHERE R.Comments LIKE CONCAT("%", review_keyword, "%")
+        AND F1.From_Alias = patient_alias
+        UNION
+        SELECT COUNT(DISTINCT R.Doctor_Alias) AS DOC
+        FROM Reviews R
+            INNER JOIN Friendship F2
+                ON (R.Patient_Alias = F2.From_Alias)
+        WHERE R.Comments LIKE CONCAT("%", review_keyword, "%")
+        AND F1.To_Alias = patient_alias) AS temp;
 END @@
 DELIMITER;
 
@@ -74,9 +78,7 @@ DELIMITER @@
 CREATE PROCEDURE Test_RequestFriend
 (IN requestor_alias VARCHAR(20), IN requestee_alias VARCHAR(20))
 BEGIN
-/* add friendship request from requestor_alias to requestee_alias */
     INSERT INTO Friendship VALUES(requestor_alias, requestee_alias, 0);
-    INSERT INTO Friendship VALUES(requestee_alias, requestor_alias, 0);
 END @@
 DELIMITER;
 
@@ -88,11 +90,6 @@ CREATE PROCEDURE Test_ConfirmFriendRequest
 BEGIN
     UPDATE Friendship SET Status = 1
     WHERE From_Alias = requestor_alias AND To_Alias = requestee_alias;
-
-    UPDATE Friendship SET Status = 1
-    WHERE From_Alias = requestee_alias AND To_Alias = requestor_alias;
-/* add friendship between requestor_alias and requestee_alias, assuming that friendship was
-requested previously */
 END @@
 DELIMITER;
 
@@ -105,9 +102,12 @@ BEGIN
     SELECT IFNULL(
         (SELECT Status
         FROM Friendship
-        WHERE From_Alias = patient_alias_1 AND To_Alias = patient_alias_2), 0)
+        WHERE From_Alias = patient_alias_1 AND To_Alias = patient_alias_2
+        UNION
+        SELECT Status
+        FROM Friendship
+        WHERE To_Alias = patient_alias_1 AND From_Alias = patient_alias_2), 0)
     INTO are_friends;
-/* returns 1 in are_friends if patient_alias_1 and patient_alias_2 are friends, 0 otherwise */
 END @@
 DELIMITER;
 
@@ -118,9 +118,6 @@ CREATE PROCEDURE Test_AddReview
 (IN patient_alias VARCHAR(20), IN doctor_alias VARCHAR(20), IN star_rating FLOAT,
 IN comments VARCHAR(256))
 BEGIN
-/* add review by patient_alias for doctor_alias with the given star_rating and comments
-fields, assign the current date to the review automatically, assume that star_rating is an
-integer multiple of 0.5 (e.g., 1.5, 2.0, 2.5, etc.) */
     INSERT INTO Reviews VALUES(star_rating, CURDATE(), comments, doctor_alias, patient_alias);
 END @@
 DELIMITER;
@@ -135,7 +132,6 @@ BEGIN
     INTO num_reviews, avg_star
     FROM Reviews R
     WHERE Doctor_Alias = doctor_alias;
-/* returns the average star rating and total number of reviews for the given doctor alias */
 END @@
 DELIMITER;
 
