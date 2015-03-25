@@ -149,7 +149,7 @@
                 </tr>
                 <tr>
                     <td>Reviewed by a Friend:</td>
-                    <td><input type="checkbox" name="docReviewedByPatFriend" size="12" autofocus></td>
+                    <td><input type="checkbox" name="docReviewedByPatFriend" size="12" value="True" autofocus></td>
                 </tr>
             </table>
             <h3><input type="submit" value="Search"></h3>

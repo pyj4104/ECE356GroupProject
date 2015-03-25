@@ -440,7 +440,7 @@ public class ProjectDBAO {
         }
     }
     
-    public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao) throws ClassNotFoundException, SQLException, NamingException {
+    public static ArrayList<Doctor> SearchForDoctors(DoctorDBAO ddbao, String patientAlias) throws ClassNotFoundException, SQLException, NamingException {
         Connection con = null;
         PreparedStatement stmt = null;
         ArrayList<Doctor> arrDoctors = new ArrayList<Doctor>();
@@ -647,6 +647,7 @@ public class ProjectDBAO {
             }
 
             sqlQuery += " F.Status = ?";
+            sqlQuery += " AND F.From_Alias = ?";
         }
        
         sqlQuery += " GROUP BY D.Alias";
@@ -734,7 +735,9 @@ public class ProjectDBAO {
             }
             if (isReviewedByPatFriendUsed)
             {
-                stmt.setBoolean(paramCount, isReviewedByPatFriend);
+                stmt.setInt(paramCount, 1);
+                paramCount++;
+                stmt.setString(paramCount, patientAlias);
                 paramCount++;
             }
             if (isAvgRatingUsed)

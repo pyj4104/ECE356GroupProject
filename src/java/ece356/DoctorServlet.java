@@ -49,7 +49,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docFirstName = request.getParameter("docFirstName");
+                    docFirstName = request.getParameter("docFirstName").trim();
                 }
                 catch (Exception ex)
                 {
@@ -62,7 +62,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docLastName = request.getParameter("docLastName");
+                    docLastName = request.getParameter("docLastName").trim();
                 }
                 catch (Exception ex)
                 {
@@ -75,7 +75,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docMiddleInitial = request.getParameter("docMiddleInitial");
+                    docMiddleInitial = request.getParameter("docMiddleInitial").trim();
                 }
                 catch (Exception ex)
                 {
@@ -88,7 +88,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docPostalCode = request.getParameter("docPostalCode");
+                    docPostalCode = request.getParameter("docPostalCode").trim();
                 }
                 catch (Exception ex)
                 {
@@ -101,7 +101,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docProvince = request.getParameter("docProvince");
+                    docProvince = request.getParameter("docProvince").trim();
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +114,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docCity = request.getParameter("docCity");
+                    docCity = request.getParameter("docCity").trim();
                 }
                 catch (Exception ex)
                 {
@@ -156,7 +156,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docSpec = request.getParameter("docSpec");
+                    docSpec = request.getParameter("docSpec").trim();
                 }
                 catch (Exception ex)
                 {
@@ -169,7 +169,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docGender = request.getParameter("docGender");
+                    docGender = request.getParameter("docGender").trim();
                 }
                 catch (Exception ex)
                 {
@@ -182,7 +182,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docStreet = request.getParameter("docStreet");
+                    docStreet = request.getParameter("docStreet").trim();
                 }
                 catch (Exception ex)
                 {
@@ -195,7 +195,7 @@ public class DoctorServlet extends HttpServlet {
             {
                 try
                 {
-                    docReviewKeywords = request.getParameter("docReviewKeywords");
+                    docReviewKeywords = request.getParameter("docReviewKeywords").trim();
                 }
                 catch (Exception ex)
                 {
@@ -204,12 +204,14 @@ public class DoctorServlet extends HttpServlet {
             }
             
             boolean docReviewedByPatFriend = false;
+            String patientAlias = "";
             if (request.getParameter("docReviewedByPatFriend") != null && !(request.getParameter("docReviewedByPatFriend").isEmpty()))
             {
                 try
                 {
                     docReviewedByPatFriend = Boolean.parseBoolean(
                             request.getParameter("docReviewedByPatFriend"));
+                    patientAlias = request.getSession().getAttribute("alias").toString();
                 }
                 catch (NumberFormatException nfe)
                 {
@@ -222,7 +224,7 @@ public class DoctorServlet extends HttpServlet {
                                               docSpec, docGender, docStreet, docReviewKeywords,
                                               docProvince, docCity,
                                               docReviewedByPatFriend);
-            ArrayList<Doctor> ret = ProjectDBAO.SearchForDoctors(ddbao);
+            ArrayList<Doctor> ret = ProjectDBAO.SearchForDoctors(ddbao, patientAlias);
             url = "./view/doctorsearch.jsp";    
             request.setAttribute("doctorSearchResults", ret);
             request.getRequestDispatcher(url).forward(request, response);
@@ -247,6 +249,12 @@ public class DoctorServlet extends HttpServlet {
             request.setAttribute("docProfile", ret);
             request.getRequestDispatcher(url).forward(request, response);
         }
+        else
+        {
+            url = "./view/error/error404.jsp";
+            request.getRequestDispatcher(url).forward(request, response);
+        }
+        // send to error.jsp
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
