@@ -119,5 +119,6 @@
                }
             }
         %>
+        <h2><a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a></h2>
     </body>
 </html>
