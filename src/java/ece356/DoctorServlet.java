@@ -129,7 +129,7 @@ public class DoctorServlet extends HttpServlet {
                 try
                 {
                     docLicenseDuration = Integer.parseInt(
-                            request.getParameter("docLicenseDuration"));
+                            request.getParameter("docLicenseDuration").replace(".", ""));
                 }
                 catch (NumberFormatException nfe)
                 {

@@ -22,6 +22,7 @@
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
                <div id="navbar" class="collapse navbar-collapse navbar-left">
+                   <a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a>
                </div>
             </div>
         </nav>

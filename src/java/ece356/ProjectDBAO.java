@@ -329,7 +329,7 @@ public class ProjectDBAO {
             
             if (!strProvince.isEmpty()) {
                 if (nCount == 1) {
-                    buffStmt.append(" OR (R.Province LIKE ?)");
+                    buffStmt.append(" AND (R.Province LIKE ?)");
                 } else {
                     buffStmt.append(" WHERE (R.Province LIKE ?)");
                 }
@@ -338,8 +338,8 @@ public class ProjectDBAO {
             }
             
             if (!strCity.isEmpty()) {
-                if (nCount > 1) {
-                    buffStmt.append(" OR (R.City LIKE ?)");
+                if (nCount >= 1) {
+                    buffStmt.append(" AND (R.City LIKE ?)");
                 } else {
                     buffStmt.append(" WHERE (R.City LIKE ?)");
                 }

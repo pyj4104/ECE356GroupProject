@@ -55,7 +55,7 @@
                 </tr>
                 <tr>
                     <td>Duration of Medical License:</td>
-                    <td><input type="text" name="docLicenseDuration" size="12" autofocus></td>
+                    <td><input type="number" name="docLicenseDuration" size="12" min ="0" max="150" step="1" pattern="[0-9]*" autofocus></td>
                 </tr>
                 <tr>
                     <td>Average Star Rating:</td>
@@ -180,5 +180,6 @@
                     
                 }
             %>
+            <h2><a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a></h2>
     </body>
 </html>

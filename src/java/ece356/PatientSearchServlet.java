@@ -40,13 +40,13 @@ public class PatientSearchServlet extends HttpServlet {
         
         String url = "/view/patientsearch.jsp";
         
-        if (request.getParameter("pAlias") != null)
+        if (request.getParameter("pAlias") != null && !request.getParameter("pAlias").trim().isEmpty())
             strAlias = request.getParameter("pAlias");
         
-        if (request.getParameter("pProv")!= null)
+        if (request.getParameter("pProv")!= null && !request.getParameter("pProv").trim().isEmpty())
             strProvince = request.getParameter("pProv");
         
-        if (request.getParameter("pCity") != null)
+        if (request.getParameter("pCity") != null && !request.getParameter("pCity").trim().isEmpty())
             strCity = request.getParameter("pCity");
         
         ArrayList<Patient> arrPatients = ProjectDBAO.SearchPatients(request.getSession().getAttribute("alias").toString(), strAlias, strProvince, strCity);
