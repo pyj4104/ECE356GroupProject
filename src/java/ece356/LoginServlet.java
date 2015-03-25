@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, ClassNotFoundException, SQLException, NamingException
     {
-        HttpSession curSession = request.getSession();
+        HttpSession curSession = request.getSession(false);
         String url;
         int nVerificationRet = -1;
         String strInputAlias = "";
@@ -46,6 +46,7 @@ public class LoginServlet extends HttpServlet {
         {
             curSession.invalidate();
         }
+        
         HttpSession session = request.getSession();
         
         // 'Go back' feature
