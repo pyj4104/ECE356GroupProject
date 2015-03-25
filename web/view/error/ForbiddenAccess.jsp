@@ -10,8 +10,16 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Error</title>
+        <link rel="stylesheet" href="/ECE356GroupProject/css/bootstrap.css"  type="text/css"/>
     </head>
     <body>
-        <h1>Forbidden Access!</h1>
+        <div class="container">
+            <div class="page-header text-center center-block">
+                <h1>
+                    <div class="glyphicon glyphicon-ban-circle"></div><br>
+                    Forbidden Access!
+                </h1>
+            </div>
+        </div>
     </body>
 </html>

@@ -10,7 +10,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title>Page Not Found</title>
-        <link rel="stylesheet" href="../css/bootstrap.css"  type="text/css"/>
+        <link rel="stylesheet" href="/ECE356GroupProject/css/bootstrap.css"  type="text/css"/>
     </head>
     <body>
         <div class="container">

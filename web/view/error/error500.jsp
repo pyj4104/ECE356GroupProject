@@ -16,7 +16,7 @@
         <div class="container">
         <div class="page-header text-center center-block">
             <h1>
-                <div class="glyphicon glyphicon-eye-close"></div><br>
+                <div class="glyphicon glyphicon-alert"></div><br>
                 Error
             </h1>
         </div>
