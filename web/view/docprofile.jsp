@@ -34,10 +34,13 @@
                     <%! Doctor doctor;%>
                     <%
                         doctor = (Doctor) request.getAttribute("docProfile");
-                        if (doctor != null)
+                        if (!(Boolean)request.getSession().getAttribute("doctor")
+                                || doctor.get_Alias().equals((String) request.getSession().getAttribute("alias")))
                         {
-                           session.setAttribute("docName", doctor.get_Name());
-                           session.setAttribute("docAlias", doctor.get_Alias());
+                            if (doctor != null)
+                            {
+                               session.setAttribute("docName", doctor.get_Name());
+                               session.setAttribute("docAlias", doctor.get_Alias());
                     %>
 
                         <table class="table">
@@ -100,14 +103,17 @@
                             </tr>
                         </table>
                     <%
-                        }
-                    %>
-                    <%
-                    if(!(Boolean)request.getSession().getAttribute("doctor"))
-                    {
+                            }
+                            if(!(Boolean)request.getSession().getAttribute("doctor"))
+                            {
                     %>
                         <a type="button" class="btn btn-success" href="view/writereview.jsp">Write Doctor Review</a>
                     <%
+                            }
+                        }
+                        else
+                        {
+                            request.getRequestDispatcher("/view/error/ForbiddenAccess.jsp").forward(request, response);
                         }
                     %>
                 </div>
