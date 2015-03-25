@@ -20,17 +20,31 @@
         %>
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
-               <div id="navbar" class="collapse navbar-collapse navbar-left">
-                   <a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a>
+               <div id="navbar" class="collapse navbar-collapse navbar-right">
+                   <p class="navbar-header navbar-text navbar-left">Logged in as <%= session.getAttribute("alias") %></p>
+                   <a type="button" class="btn btn-primary navbar-btn navbar-left" href="/ECE356GroupProject/LogoutServlet">Sign out</a>
                </div>
             </div>
         </nav>
         <div class="container" style="padding-top: 85px">
+            <div class="jumbotron">
+                <div class="page-header text-center">
+                    <h1>
+                        <div class="glyphicon glyphicon-user"></div>
+                        <span>Hello <%= session.getAttribute("alias") %>!</span>
+                    </h1>
+                    <br>
+                    <blockquote>
+                        <p>He who has health, has hope; and he who has hope, has everything.</p>
+                        <footer>Thomas Carlyle</footer>
+                    </blockquote>
+                </div>
+            </div>
             <div class="col-lg-4 col-lg-offset-5">
-                <div class="btn-group-vertical" role="group">
-                    <a class="btn btn-default" href="./view/patientsearch.jsp">Search Patient</a>
+                <div class="btn-group-lg btn-group-vertical" role="group">
+                    <a class="btn btn-default" href="./view/patientsearch.jsp">Search Patients</a>
                     <a class="btn btn-default" href="FriendRequestsServlet?op=1">View Friend Requests</a>
-                    <a class="btn btn-default" href="view/doctorsearch.jsp">Search Doctor</a>
+                    <a class="btn btn-default" href="view/doctorsearch.jsp">Search Doctors</a>
                 </div>
             </div>
         </div>

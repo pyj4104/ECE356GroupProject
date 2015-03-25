@@ -16,9 +16,9 @@
         %>
         <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
-               <div id="navbar" class="collapse navbar-collapse navbar-left">
-                    <!--<a type="button" class="btn btn-primary navbar-btn" href="LoginServlet">Go Back</a>-->
-                    <a type="button" class="btn btn-primary navbar-btn" href="LogoutServlet">Sign out</a>
+               <div id="navbar" class="collapse navbar-collapse navbar-right">
+                   <p class="navbar-header navbar-text navbar-left">Logged in as <%= session.getAttribute("alias") %></p>
+                   <a type="button" class="btn btn-primary navbar-btn navbar-left" href="/ECE356GroupProject/LogoutServlet">Sign out</a>
                </div>
             </div>
         </nav>

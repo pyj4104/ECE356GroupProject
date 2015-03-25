@@ -46,7 +46,7 @@
                             </tr>
                             <tr>
                                 <td>Comments:</td>
-                                <td><input type="text" name="docComments" size="25" maxlength="1000" autofocus required></td>
+                                <td><input type="text" class="form-control" placeholder="Comments" name="docComments" size="25" maxlength="1000" autofocus required></td>
                             </tr>
                         </table>
                         <input class="btn btn-primary" type="submit" value="Submit">
