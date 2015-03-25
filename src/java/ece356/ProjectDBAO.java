@@ -647,7 +647,8 @@ public class ProjectDBAO {
             }
 
             sqlQuery += " F.Status = ?";
-            sqlQuery += " AND F.From_Alias = ?";
+            sqlQuery += " AND (F.From_Alias = ?";
+            sqlQuery += " OR F.To_Alias = ?)";
         }
        
         sqlQuery += " GROUP BY D.Alias";
@@ -736,6 +737,8 @@ public class ProjectDBAO {
             if (isReviewedByPatFriendUsed)
             {
                 stmt.setInt(paramCount, 1);
+                paramCount++;
+                stmt.setString(paramCount, patientAlias);
                 paramCount++;
                 stmt.setString(paramCount, patientAlias);
                 paramCount++;
