@@ -54,7 +54,7 @@ DELIMITER @@
 CREATE PROCEDURE Test_DoctorSearchFriendReview
 (IN patient_alias VARCHAR(20), IN review_keyword VARCHAR(20), OUT num_matches INT)
 BEGIN
-    SELECT DOC INTO num_matches
+    SELECT SUM(DOC) INTO num_matches
     FROM(
         SELECT COUNT(DISTINCT R.Doctor_Alias) AS DOC
         FROM Reviews R
@@ -68,7 +68,7 @@ BEGIN
             INNER JOIN Friendship F2
                 ON (R.Patient_Alias = F2.From_Alias)
         WHERE R.Comments LIKE CONCAT("%", review_keyword, "%")
-        AND F1.To_Alias = patient_alias) AS temp;
+        AND F2.To_Alias = patient_alias) AS temp;
 END @@
 DELIMITER;
 
@@ -131,7 +131,7 @@ BEGIN
     SELECT COUNT(R.Review_Date), AVG(R.Rating)
     INTO num_reviews, avg_star
     FROM Reviews R
-    WHERE Doctor_Alias = doctor_alias;
+    WHERE R.Doctor_Alias = doctor_alias;
 END @@
 DELIMITER;
 
