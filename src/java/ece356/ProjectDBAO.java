@@ -315,16 +315,25 @@ public class ProjectDBAO {
             
             con = getConnection();
             StringBuilder buffStmt = new StringBuilder();
-            buffStmt.append("SELECT UD.First_Name, UD.Last_Name, UD.Middle_Initial, UD.Email, L.Alias, R.Province, R.City FROM Login L "
+            buffStmt.append("SELECT UD.First_Name, UD.Last_Name, UD.Middle_Initial, UD.Email, L.Alias, R.Province, R.City, RE.n_reviews, RE.last_review_date FROM Login L "
                                         + "INNER JOIN Patient P ON L.Alias = P.Alias "
                                         + "INNER JOIN Region R ON R.Region_ID = P.Region_ID "
                                         + "INNER JOIN User_Detail UD ON UD.UserID = L.UserID ");
             
             
             if (!strAlias.isEmpty()) {
+                buffStmt.append("LEFT JOIN ( "
+                                + "SELECT R.Patient_Alias AS 'P_Alias', COUNT(*) AS 'n_reviews', max(R.Review_Date) AS 'last_review_date' FROM Reviews R "
+                                + "WHERE R.Patient_Alias LIKE ? GROUP BY R.Patient_Alias" 
+                                + ") RE ON RE.P_Alias = P.`Alias` ");
                 buffStmt.append(" WHERE (L.Alias LIKE ?)");
                 nCount++;
                 isAlias = true;
+            } else {
+                buffStmt.append("LEFT JOIN ( "
+                                + "SELECT R.Patient_Alias AS 'P_Alias', COUNT(*) AS 'n_reviews', max(R.Review_Date) AS 'last_review_date' FROM Reviews R "
+                                + "GROUP BY R.Patient_Alias" 
+                                + ") RE ON RE.P_Alias = P.`Alias` ");
             }
             
             if (!strProvince.isEmpty()) {
@@ -347,23 +356,24 @@ public class ProjectDBAO {
                 isCity = true;
             }
             
-//            buffStmt.append(" GROUP BY L.Alias");
-            
             stmt = con.prepareStatement(buffStmt.toString());
              
             if (nCount == 3) {
                 stmt.setString(1, "%" + strAlias + "%");
-                stmt.setString(2, "%" + strProvince + "%");
-                stmt.setString(3, "%" + strCity + "%");
+                stmt.setString(2, "%" + strAlias + "%");
+                stmt.setString(3, "%" + strProvince + "%");
+                stmt.setString(4, "%" + strCity + "%");
             } else if (nCount == 2) {
                 if (isAlias && isProv) {
                     stmt.setString(1, "%" + strAlias + "%");
-                    stmt.setString(2, "%" + strProvince + "%");
+                    stmt.setString(2, "%" + strAlias + "%");
+                    stmt.setString(3, "%" + strProvince + "%");
                 }
                 
                 if (isAlias && isCity) {
                     stmt.setString(1, "%" + strAlias + "%");
-                    stmt.setString(2, "%" + strCity + "%");
+                    stmt.setString(2, "%" + strAlias + "%");
+                    stmt.setString(3, "%" + strCity + "%");
                 }
                 
                 if (isProv && isCity) {
@@ -373,6 +383,7 @@ public class ProjectDBAO {
             } else if (nCount == 1) {
                 if (isAlias) {
                     stmt.setString(1, "%" + strAlias + "%");
+                    stmt.setString(2, "%" + strAlias + "%");
                 }
                 
                 if (isCity) {
@@ -390,14 +401,8 @@ public class ProjectDBAO {
                 int nReviews = 0;
                 String strLatestReviewDate = "";
                 
-                stmt = con.prepareStatement("SELECT R.Patient_Alias, COUNT(*), max(R.Review_Date) FROM Reviews R WHERE R.Patient_Alias = ? GROUP BY R.Patient_Alias");
-                stmt.setString(1, alias);
-                
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    nReviews = rs.getInt("COUNT(*)");
-                    strLatestReviewDate = rs.getString("max(R.Review_Date)");
-                }
+                nReviews = resultSet.getInt("n_reviews");
+                strLatestReviewDate = (resultSet.getString("last_review_date") != null) ? (resultSet.getString("last_review_date")) : "N/A";
                 
                 HashMap hmFriends = new HashMap();
                 stmt = con.prepareStatement("SELECT * FROM Friendship WHERE (To_Alias = ? AND From_Alias = ?) OR (To_Alias = ? AND From_Alias = ?)");
@@ -800,6 +805,8 @@ public class ProjectDBAO {
         
         try {
             con = getConnection();
+            con.setAutoCommit(false);
+            con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             stmt = con.prepareStatement("INSERT INTO Reviews VALUES(?, NOW(),"
                     + " ?, ?, ?)"
                     );
@@ -809,6 +816,13 @@ public class ProjectDBAO {
             stmt.setString(3, doctor_alias);
             stmt.setString(4, patient_alias);
             stmt.executeUpdate();
+            con.commit();
+        }  catch (SQLException ex) {
+            Logger.getLogger(
+              PatientSearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+            if (con != null) {
+                con.rollback();
+            }
         } finally {
             if (stmt != null) {
                 stmt.close();
@@ -826,11 +840,19 @@ public class ProjectDBAO {
         
         try {
             con = getConnection();
+            con.setAutoCommit(false);
+            con.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
             stmt = con.prepareStatement("Update Friendship SET Status = 1 WHERE From_Alias = ? AND To_Alias = ?");
 
             stmt.setString(1, strFromAlias);
             stmt.setString(2, strToAlias);
             stmt.executeUpdate();
+            con.commit();
+        } catch (SQLException ex) {
+            Logger.getLogger(PatientSearchServlet.class.getName()).log(Level.SEVERE, null, ex);
+            if (con != null) {
+                con.rollback();
+            }
         } finally {
             if (stmt != null) {
                 stmt.close();
